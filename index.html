@@ -5,15 +5,2006 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>StoryForge — AI TikTok Factory</title>
 <style>
-body { background: #08090c; color: #e8eaf2; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px; }
-.logo { font-size: 2rem; font-weight: bold; }
-.logo span { color: #e8ff47; }
-p { color: #555; font-size: 14px; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #08090c;
+  --surface: #0f1117;
+  --surface2: #151820;
+  --border: #1e2130;
+  --border2: #252a3a;
+  --accent: #e8ff47;
+  --accent2: #ff4d6d;
+  --accent3: #4dffc3;
+  --text: #e8eaf2;
+  --text2: #7a7f96;
+  --text3: #3d4260;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Instrument Sans', sans-serif;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+/* TOP NAV (mobile header) */
+.topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-mark {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  color: var(--text);
+}
+.logo-mark span { color: var(--accent); }
+
+.topnav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--accent3);
+  background: rgba(77,255,195,0.08);
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(77,255,195,0.2);
+}
+
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* BOTTOM TAB BAR */
+.tabbar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  font-size: 10px;
+  color: var(--text3);
+  cursor: pointer;
+  gap: 4px;
+  border: none;
+  background: none;
+  font-family: 'Instrument Sans', sans-serif;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab.active { color: var(--accent); }
+.tab-icon { font-size: 20px; }
+
+/* PAGES */
+.page { display: none; padding: 16px; }
+.page.active { display: block; }
+
+/* STATS */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent-color, var(--accent));
+}
+
+.stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.7rem;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-change {
+  font-size: 10px;
+  color: var(--accent3);
+  margin-top: 5px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* SECTION HEADER */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+}
+
+.badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(232,255,71,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(232,255,71,0.2);
+  letter-spacing: 1px;
+}
+
+/* GENERATE PAGE */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.form-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.niche-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.niche-btn {
+  padding: 12px 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  color: var(--text2);
+  font-size: 11px;
+  font-family: 'Instrument Sans', sans-serif;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.niche-btn .emoji { font-size: 20px; display: block; margin-bottom: 5px; }
+.niche-btn.selected { border-color: var(--accent); background: rgba(232,255,71,0.07); color: var(--accent); }
+
+.select-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  margin-bottom: 0;
+}
+
+.select-wrap {
+  position: relative;
+}
+
+.select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text2);
+  pointer-events: none;
+  font-size: 14px;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+.toggle-row:last-child { border-bottom: none; }
+
+.toggle-info { font-size: 13px; color: var(--text); line-height: 1.3; }
+.toggle-info small { display: block; font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+.toggle {
+  width: 44px; height: 26px;
+  background: var(--border2);
+  border-radius: 13px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: none;
+  flex-shrink: 0;
+  margin-left: 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toggle.on { background: var(--accent); }
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: white;
+  top: 3px; left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.toggle.on::after { transform: translateX(18px); background: #000; }
+
+.generate-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: #000;
+  font-family: 'Instrument Sans', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.generate-btn:active { opacity: 0.8; }
+.generate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* OUTPUT */
+.output-box {
+  display: none;
+  margin-top: 14px;
+}
+.output-box.visible { display: block; }
+
+.script-area {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.8;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: 12px;
+}
+
+.loading-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+}
+
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(232,255,71,0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 12px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text);
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.action-btn.primary {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+/* QUEUE PAGE */
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.q-thumb {
+  width: 44px; height: 44px;
+  border-radius: 8px;
+  background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.q-info { flex: 1; min-width: 0; }
+.q-title { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.q-meta { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 3px; }
+
+.q-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.s-live { background: rgba(77,255,195,0.1); color: var(--accent3); }
+.s-queued { background: rgba(232,255,71,0.08); color: var(--accent); }
+.s-building { background: rgba(255,77,109,0.1); color: var(--accent2); }
+
+/* CHANNELS PAGE */
+.channel-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.ch-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.ch-name { font-size: 14px; font-weight: 600; }
+.ch-sub { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
+
+.ch-stats { margin-left: auto; text-align: right; flex-shrink: 0; }
+.ch-views { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
+.ch-trend { font-size: 10px; color: var(--accent3); font-family: 'DM Mono', monospace; }
+
+.add-channel {
+  width: 100%;
+  padding: 14px;
+  border: 2px dashed var(--border2);
+  border-radius: 10px;
+  background: none;
+  color: var(--text3);
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ANALYTICS PAGE */
+.revenue-big {
+  text-align: center;
+  padding: 28px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.revenue-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.revenue-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 3.5rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.revenue-sub {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 8px;
+  font-family: 'DM Mono', monospace;
+}
+
+.income-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+.income-row:last-child { border-bottom: none; }
+
+.income-source { font-size: 13px; color: var(--text2); }
+.income-amount { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--text); }
+
+.progress-bar {
+  height: 4px;
+  background: var(--border2);
+  border-radius: 2px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.niche-btn.locked {
+  opacity: 0.45;
+  position: relative;
+  cursor: pointer;
+}
+
+.niche-btn.locked::after {
+  content: '🔒';
+  position: absolute;
+  top: 5px; right: 6px;
+  font-size: 10px;
+}
+
+/* UPGRADE MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 200;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 18px 18px 0 0;
+  padding: 28px 22px 40px;
+  width: 100%;
+  max-width: 520px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-handle {
+  width: 40px; height: 4px;
+  background: var(--border2);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+.modal-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+}
+
+.modal-sub {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.modal-features {
+  margin-bottom: 22px;
+}
+
+.modal-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text2);
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+.modal-feature:last-child { border-bottom: none; }
+.modal-feature span { color: var(--accent); font-size: 16px; }
+
+.modal-upgrade-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--accent);
+  color: #000;
+  font-family: 'Instrument Sans', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* FORM SPACING */
+.form-row { margin-bottom: 16px; }
+
+/* PIPELINE STEPS */
+.step-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+
+.step-card.active-step { border-color: var(--accent); }
+.step-card.done-step { border-color: var(--accent3); }
+.step-card.locked-step { opacity: 0.45; pointer-events: none; }
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.step-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-card.active-step .step-num { background: var(--accent); color: #000; border-color: var(--accent); }
+.step-card.done-step .step-num { background: var(--accent3); color: #000; border-color: var(--accent3); }
+
+.step-title {
+  font-weight: 700;
+  font-size: 14px;
+  flex: 1;
+}
+
+.step-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+}
+
+.step-body { padding: 4px 0; }
+
+/* VOICEOVER PLAYER */
+.vo-player {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 8px;
+}
+
+.vo-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.vo-icon {
+  font-size: 24px;
+}
+
+.vo-meta { flex: 1; }
+.vo-name { font-size: 13px; font-weight: 600; }
+.vo-details { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
+
+.vo-waveform {
+  height: 40px;
+  background: var(--bg);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.vo-bar {
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.6;
+  animation: vowave 1s ease-in-out infinite;
+}
+
+@keyframes vowave {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+.vo-controls {
+  display: flex;
+  gap: 8px;
+}
+
+/* Settings input focus */
+input:focus {
+  border-color: var(--accent) !important;
+  outline: none;
+}
+
+/* VOICE CARDS */
+.voice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.voice-card {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.voice-card.selected {
+  border-color: var(--accent);
+  background: rgba(232,255,71,0.06);
+}
+
+.voice-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  pointer-events: none;
+}
+
+.voice-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.voice-avatar.male { background: rgba(77,180,255,0.15); color: #4db4ff; }
+.voice-avatar.female { background: rgba(255,77,180,0.15); color: #ff4db4; }
+.voice-avatar.asmr { background: rgba(77,255,195,0.15); color: var(--accent3); font-size: 20px; }
+
+.voice-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.voice-default {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  background: var(--accent);
+  color: #000;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.voice-desc {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 2px;
+  font-family: 'DM Mono', monospace;
+}
+
+.preview-btn {
+  width: 100%;
+  padding: 7px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--text2);
+  font-size: 11px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+}
+
+.voice-card.selected .preview-btn {
+  border-color: rgba(232,255,71,0.3);
+  color: var(--accent);
+}
+
+.preview-btn:active { opacity: 0.7; }
+
+/* PREVIEW PLAYER */
+.preview-player {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 4px;
+}
+
+.preview-playing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.preview-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.preview-wave span {
+  display: block;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  animation: wave 0.8s ease-in-out infinite;
+}
+
+.preview-wave span:nth-child(1) { height: 8px; animation-delay: 0s; }
+.preview-wave span:nth-child(2) { height: 16px; animation-delay: 0.1s; }
+.preview-wave span:nth-child(3) { height: 22px; animation-delay: 0.2s; }
+.preview-wave span:nth-child(4) { height: 16px; animation-delay: 0.3s; }
+.preview-wave span:nth-child(5) { height: 8px; animation-delay: 0.4s; }
+
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+.preview-label {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+}
+
+.preview-stop {
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+
 </style>
 </head>
 <body>
-<div class="logo">Story<span>Forge</span></div>
-<p>Your AI TikTok Factory is being set up...</p>
-<p style="color:#e8ff47; font-size:12px;">✓ Deployed successfully at storyforge.vercel.app</p>
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <div class="logo-mark">Story<span>Forge</span></div>
+  <div class="topnav-right">
+    <div class="status-pill"><div class="dot"></div>Live</div>
+  </div>
+</div>
+
+<!-- PAGES -->
+
+<!-- HOME / STATS -->
+<div class="page active" id="page-home">
+  <div style="margin-bottom:14px; margin-top:4px;">
+    <div style="font-family:'DM Serif Display',serif; font-size:1.5rem; line-height:1.2;">
+      Your Factory<br><span style="color:var(--accent)">is Running ⚡</span>
+    </div>
+    <div style="font-size:12px; color:var(--text3); margin-top:6px; font-family:'DM Mono',monospace;">Next auto-post in 4h 23m</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card" style="--accent-color:var(--accent)">
+      <div class="stat-label">Videos / Mo</div>
+      <div class="stat-value">24</div>
+      <div class="stat-change">↑ 8 more</div>
+    </div>
+    <div class="stat-card" style="--accent-color:var(--accent3)">
+      <div class="stat-label">Total Views</div>
+      <div class="stat-value">1.4M</div>
+      <div class="stat-change">↑ 34% wk</div>
+    </div>
+    <div class="stat-card" style="--accent-color:var(--accent2)">
+      <div class="stat-label">Revenue</div>
+      <div class="stat-value">$847</div>
+      <div class="stat-change">↑ $210 mo</div>
+    </div>
+    <div class="stat-card" style="--accent-color:#a78bfa">
+      <div class="stat-label">Auto-Posted</div>
+      <div class="stat-value">18</div>
+      <div class="stat-change">6 pending</div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div class="section-title">Recent Videos</div>
+    <div class="badge">4 QUEUED</div>
+  </div>
+
+  <div class="queue-item">
+    <div class="q-thumb">😨</div>
+    <div class="q-info">
+      <div class="q-title">The Murder That Shocked a Town</div>
+      <div class="q-meta">True Crime · 60s · Posts 9AM</div>
+    </div>
+    <div class="q-status s-queued">Queued</div>
+  </div>
+  <div class="queue-item">
+    <div class="q-thumb">💰</div>
+    <div class="q-info">
+      <div class="q-title">5 Stocks That Made Millionaires</div>
+      <div class="q-meta">Finance · 45s · YouTube</div>
+    </div>
+    <div class="q-status s-live">Live ✓</div>
+  </div>
+  <div class="queue-item">
+    <div class="q-thumb">👻</div>
+    <div class="q-info">
+      <div class="q-title">The Hotel Room Nobody Checks</div>
+      <div class="q-meta">Horror · 60s · Building...</div>
+    </div>
+    <div class="q-status s-building">Building</div>
+  </div>
+</div>
+
+<!-- GENERATE -->
+<div class="page" id="page-generate">
+  <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:16px; margin-top:4px;">
+    Generate Video
+  </div>
+
+  <div class="card">
+    <div class="form-row">
+      <label class="form-label">Pick Your Niche</label>
+      <div style="font-size:10px; color:var(--accent3); font-family:'DM Mono',monospace; margin-bottom:8px; letter-spacing:1px;">FREE</div>
+      <div class="niche-grid" style="margin-bottom:10px">
+        <div class="niche-btn selected" onclick="selectNiche(this,'Motivation')">
+          <span class="emoji">✨</span>Motivation
+        </div>
+        <div class="niche-btn" onclick="selectNiche(this,'History')">
+          <span class="emoji">🌍</span>History
+        </div>
+        <div class="niche-btn" onclick="selectNiche(this,'Psychology')">
+          <span class="emoji">🧠</span>Psychology
+        </div>
+      </div>
+      <div style="font-size:10px; color:var(--accent2); font-family:'DM Mono',monospace; margin-bottom:8px; letter-spacing:1px;">PRO 🔒</div>
+      <div class="niche-grid">
+        <div class="niche-btn locked" onclick="showUpgrade()">
+          <span class="emoji">😨</span>True Crime
+        </div>
+        <div class="niche-btn locked" onclick="showUpgrade()">
+          <span class="emoji">💰</span>Finance
+        </div>
+        <div class="niche-btn locked" onclick="showUpgrade()">
+          <span class="emoji">👻</span>Horror
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Duration</label>
+      <div class="select-wrap">
+        <select class="select-input" id="duration">
+          <option>30 seconds (viral short)</option>
+          <option selected>60 seconds (standard)</option>
+          <option>90 seconds (story format)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">AI Voice</label>
+      <div class="voice-grid" id="voiceGrid">
+
+        <div class="voice-card selected" onclick="selectVoice(this,'Adam')" data-voice="Adam">
+          <div class="voice-top">
+            <div class="voice-avatar male">♂</div>
+            <div class="voice-info">
+              <div class="voice-name">Adam <span class="voice-default">DEFAULT</span></div>
+              <div class="voice-desc">Deep · Clear · TikTok-style</div>
+            </div>
+          </div>
+          <button class="preview-btn" onclick="previewVoice(event,'Adam','Hey, you need to hear this story. Trust me, you won\'t believe what happened.')">▶ Preview</button>
+        </div>
+
+        <div class="voice-card" onclick="selectVoice(this,'Josh')" data-voice="Josh">
+          <div class="voice-top">
+            <div class="voice-avatar male">♂</div>
+            <div class="voice-info">
+              <div class="voice-name">Josh</div>
+              <div class="voice-desc">Young · Energetic · Hype</div>
+            </div>
+          </div>
+          <button class="preview-btn" onclick="previewVoice(event,'Josh','Wait till you hear this. This actually happened and nobody\'s talking about it.')">▶ Preview</button>
+        </div>
+
+        <div class="voice-card" onclick="selectVoice(this,'Arnold')" data-voice="Arnold">
+          <div class="voice-top">
+            <div class="voice-avatar male">♂</div>
+            <div class="voice-info">
+              <div class="voice-name">Arnold</div>
+              <div class="voice-desc">Deep · Authoritative · Bold</div>
+            </div>
+          </div>
+          <button class="preview-btn" onclick="previewVoice(event,'Arnold','What I\'m about to tell you will change the way you see everything.')">▶ Preview</button>
+        </div>
+
+        <div class="voice-card" onclick="selectVoice(this,'Rachel')" data-voice="Rachel">
+          <div class="voice-top">
+            <div class="voice-avatar female">♀</div>
+            <div class="voice-info">
+              <div class="voice-name">Rachel</div>
+              <div class="voice-desc">Female · Neutral · Clear</div>
+            </div>
+          </div>
+          <button class="preview-btn" onclick="previewVoice(event,'Rachel','Nobody ever talks about this. And once you know, you can\'t unknow it.')">▶ Preview</button>
+        </div>
+
+        <div class="voice-card" onclick="selectVoice(this,'Bella')" data-voice="Bella">
+          <div class="voice-top">
+            <div class="voice-avatar female">♀</div>
+            <div class="voice-info">
+              <div class="voice-name">Bella</div>
+              <div class="voice-desc">Female · Warm · Storyteller</div>
+            </div>
+          </div>
+          <button class="preview-btn" onclick="previewVoice(event,'Bella','I need you to stay till the end of this. It gets so much darker.')">▶ Preview</button>
+        </div>
+
+        <div class="voice-card" onclick="selectVoice(this,'Whisper')" data-voice="Whisper">
+          <div class="voice-top">
+            <div class="voice-avatar asmr">~</div>
+            <div class="voice-info">
+              <div class="voice-name">ASMR</div>
+              <div class="voice-desc">Soft · Whisper · Calm</div>
+            </div>
+          </div>
+          <button class="preview-btn" onclick="previewVoice(event,'Whisper','Close your eyes. Let me tell you something nobody else will.')">▶ Preview</button>
+        </div>
+
+      </div>
+
+      <!-- Preview player -->
+      <div class="preview-player" id="previewPlayer" style="display:none">
+        <div class="preview-playing">
+          <div class="preview-wave">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="preview-label" id="previewLabel">Generating preview...</div>
+          <button class="preview-stop" onclick="stopPreview()">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row" style="margin-bottom:0">
+      <label class="form-label">Background</label>
+      <div class="select-wrap">
+        <select class="select-input" id="background">
+          <option selected>Minecraft Parkour</option>
+          <option>Subway Surfers</option>
+          <option>Satisfying Cooking</option>
+          <option>Soap Cutting</option>
+          <option>Nature / Aerial</option>
+          <option>City Timelapse</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="form-label" style="margin-bottom:4px">Options</label>
+    <div class="toggle-row">
+      <div class="toggle-info">Auto-Caption<small>Burn subtitles into video</small></div>
+      <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-info">Auto-Post to YouTube<small>Uploads when ready</small></div>
+      <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-info">Affiliate Link in Bio<small>Auto-rotate top offers</small></div>
+      <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-info">Cross-post to TikTok<small>Manual upload reminder</small></div>
+      <button class="toggle" onclick="this.classList.toggle('on')"></button>
+    </div>
+  </div>
+
+  <button class="generate-btn" id="genBtn" onclick="generateScript()">
+    ⚡ Generate Script
+  </button>
+
+  <!-- PIPELINE STEPS -->
+  <div class="output-box" id="outputBox">
+
+    <!-- STEP 1: SCRIPT -->
+    <div class="step-card" id="stepScript">
+      <div class="step-header">
+        <div class="step-num" id="stepNum1">1</div>
+        <div class="step-title">Script</div>
+        <div class="step-status" id="stepStatus1"></div>
+      </div>
+      <div class="script-area" id="scriptArea"></div>
+      <div class="action-row" id="scriptActions" style="display:none">
+        <button class="action-btn" onclick="generateScript()">↺ Redo</button>
+        <button class="action-btn primary" onclick="startVoiceover()">🎙 Generate Voiceover →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: VOICEOVER -->
+    <div class="step-card locked-step" id="stepVoice">
+      <div class="step-header">
+        <div class="step-num" id="stepNum2">2</div>
+        <div class="step-title">Voiceover</div>
+        <div class="step-status" id="stepStatus2"></div>
+      </div>
+      <div class="step-body" id="voiceBody">
+        <div style="font-size:12px; color:var(--text3); font-family:'DM Mono',monospace;">Generate script first</div>
+      </div>
+    </div>
+
+    <!-- STEP 3: VIDEO -->
+    <div class="step-card locked-step" id="stepVideo">
+      <div class="step-header">
+        <div class="step-num" id="stepNum3">3</div>
+        <div class="step-title">Video Assembly</div>
+        <div class="step-status" id="stepStatus3"></div>
+      </div>
+      <div class="step-body" id="videoBody">
+        <div style="font-size:12px; color:var(--text3); font-family:'DM Mono',monospace;">Voiceover needed first</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- QUEUE -->
+<div class="page" id="page-queue">
+  <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:16px; margin-top:4px;">
+    Video Queue
+  </div>
+
+  <div class="queue-item">
+    <div class="q-thumb">😨</div>
+    <div class="q-info">
+      <div class="q-title">The Murder That Shocked a Town</div>
+      <div class="q-meta">True Crime · 60s · Tomorrow 9AM</div>
+    </div>
+    <div class="q-status s-queued">Queued</div>
+  </div>
+  <div class="queue-item">
+    <div class="q-thumb">👻</div>
+    <div class="q-info">
+      <div class="q-title">The Hotel Room Nobody Checks</div>
+      <div class="q-meta">Horror · 60s · Processing</div>
+    </div>
+    <div class="q-status s-building">Building</div>
+  </div>
+  <div class="queue-item">
+    <div class="q-thumb">🧠</div>
+    <div class="q-info">
+      <div class="q-title">Why You Can't Stop Scrolling</div>
+      <div class="q-meta">Psychology · 30s · Wed 6PM</div>
+    </div>
+    <div class="q-status s-queued">Queued</div>
+  </div>
+  <div class="queue-item">
+    <div class="q-thumb">💰</div>
+    <div class="q-info">
+      <div class="q-title">5 Stocks That Made Millionaires</div>
+      <div class="q-meta">Finance · 45s · Posted</div>
+    </div>
+    <div class="q-status s-live">Live ✓</div>
+  </div>
+  <div class="queue-item">
+    <div class="q-thumb">🌍</div>
+    <div class="q-info">
+      <div class="q-title">The War Nobody Talks About</div>
+      <div class="q-meta">History · 60s · Posted</div>
+    </div>
+    <div class="q-status s-live">Live ✓</div>
+  </div>
+</div>
+
+<!-- CHANNELS -->
+<div class="page" id="page-channels">
+  <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:16px; margin-top:4px;">
+    My Channels
+  </div>
+
+  <div class="channel-item">
+    <div class="ch-avatar" style="background:rgba(255,77,109,0.15)">😨</div>
+    <div>
+      <div class="ch-name">@truecrime.daily</div>
+      <div class="ch-sub">TikTok · 12.4k followers</div>
+    </div>
+    <div class="ch-stats">
+      <div class="ch-views">847K</div>
+      <div class="ch-trend">↑ views/mo</div>
+    </div>
+  </div>
+
+  <div class="channel-item">
+    <div class="ch-avatar" style="background:rgba(232,255,71,0.1)">💰</div>
+    <div>
+      <div class="ch-name">@moneyminds.ai</div>
+      <div class="ch-sub">YouTube · 8.1k subs</div>
+    </div>
+    <div class="ch-stats">
+      <div class="ch-views">391K</div>
+      <div class="ch-trend">↑ views/mo</div>
+    </div>
+  </div>
+
+  <div class="channel-item">
+    <div class="ch-avatar" style="background:rgba(77,255,195,0.1)">🧠</div>
+    <div>
+      <div class="ch-name">@psychfacts</div>
+      <div class="ch-sub">YT Shorts · 3.2k subs</div>
+    </div>
+    <div class="ch-stats">
+      <div class="ch-views">156K</div>
+      <div class="ch-trend">↑ views/mo</div>
+    </div>
+  </div>
+
+  <button class="add-channel">+ Connect New Channel</button>
+</div>
+
+<!-- ANALYTICS -->
+<div class="page" id="page-analytics">
+  <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:16px; margin-top:4px;">
+    Revenue
+  </div>
+
+  <div class="revenue-big">
+    <div class="revenue-label">This Month</div>
+    <div class="revenue-num">$847</div>
+    <div class="revenue-sub">↑ 33% from last month · On track for $1,200</div>
+  </div>
+
+  <div class="card">
+    <label class="form-label">Income Breakdown</label>
+
+    <div class="income-row">
+      <div>
+        <div class="income-source">YouTube Ad Revenue</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:65%; background:var(--accent3)"></div></div>
+      </div>
+      <div class="income-amount" style="margin-left:16px">$551</div>
+    </div>
+
+    <div class="income-row">
+      <div>
+        <div class="income-source">Affiliate Links</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:25%; background:var(--accent)"></div></div>
+      </div>
+      <div class="income-amount" style="margin-left:16px">$212</div>
+    </div>
+
+    <div class="income-row">
+      <div>
+        <div class="income-source">Tool Subscriptions</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:10%; background:var(--accent2)"></div></div>
+      </div>
+      <div class="income-amount" style="margin-left:16px">$84</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="form-label">Best Performing Video</label>
+    <div style="font-size:14px; font-weight:600; margin-bottom:4px">"5 Stocks That Made Millionaires"</div>
+    <div style="font-size:12px; color:var(--text3); font-family:'DM Mono',monospace">Finance · 247K views · $143 revenue</div>
+    <div style="margin-top:12px; display:flex; gap:10px">
+      <div style="flex:1; background:var(--surface2); border-radius:8px; padding:10px; text-align:center">
+        <div style="font-family:'DM Serif Display',serif; font-size:1.3rem">8.4%</div>
+        <div style="font-size:10px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:2px">Click Rate</div>
+      </div>
+      <div style="flex:1; background:var(--surface2); border-radius:8px; padding:10px; text-align:center">
+        <div style="font-family:'DM Serif Display',serif; font-size:1.3rem">73%</div>
+        <div style="font-size:10px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:2px">Watch Time</div>
+      </div>
+      <div style="flex:1; background:var(--surface2); border-radius:8px; padding:10px; text-align:center">
+        <div style="font-family:'DM Serif Display',serif; font-size:1.3rem">12K</div>
+        <div style="font-size:10px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:2px">Shares</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div class="page" id="page-settings">
+  <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:16px; margin-top:4px;">
+    Settings
+  </div>
+
+  <div class="card">
+    <label class="form-label">ElevenLabs API Key</label>
+    <div style="font-size:12px; color:var(--text2); margin-bottom:12px; line-height:1.5;">
+      Get your free key at <span style="color:var(--accent)">elevenlabs.io</span> → Profile → API Keys
+    </div>
+    <div style="position:relative; margin-bottom:10px;">
+      <input type="password" id="elevenLabsKey" placeholder="Paste your API key here..."
+        style="width:100%; background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:12px 44px 12px 14px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; outline:none;"
+        oninput="saveKey(this.value)"
+      />
+      <button onclick="toggleKeyVisibility()" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text2); font-size:16px; cursor:pointer;" id="eyeBtn">👁</button>
+    </div>
+    <div id="keyStatus" style="font-size:11px; font-family:'DM Mono',monospace; color:var(--text3); min-height:16px;"></div>
+  </div>
+
+  <div class="card">
+    <label class="form-label">Anthropic API Key</label>
+    <div style="font-size:12px; color:var(--text2); margin-bottom:12px; line-height:1.5;">
+      For AI script generation. Get at <span style="color:var(--accent)">console.anthropic.com</span>
+    </div>
+    <div style="position:relative;">
+      <input type="password" id="anthropicKey" placeholder="Paste your Anthropic key here..."
+        style="width:100%; background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:12px 14px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; outline:none;"
+        oninput="saveAnthropicKey(this.value)"
+      />
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="form-label">Default Post Schedule</label>
+    <div class="select-wrap">
+      <select class="select-input">
+        <option>Once daily — 9:00 AM</option>
+        <option selected>Twice daily — 9AM & 6PM</option>
+        <option>Three times daily</option>
+        <option>Manual only</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <label class="form-label">Plan</label>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-size:14px; font-weight:600;">Free Plan</div>
+        <div style="font-size:11px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:3px;">5 videos/mo · 3 niches · No auto-post</div>
+      </div>
+      <button onclick="showUpgrade()" style="padding:10px 16px; background:var(--accent); color:#000; border:none; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer;">Upgrade</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="upgradeModal" onclick="closeUpgrade(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Unlock Pro Niches 🔒</div>
+    <div class="modal-sub">True Crime, Finance, and Horror are the highest-converting niches. Upgrade to Pro to access them.</div>
+    <div class="modal-features">
+      <div class="modal-feature"><span>😨</span> True Crime — avg 3x more views</div>
+      <div class="modal-feature"><span>💰</span> Finance — highest affiliate earnings</div>
+      <div class="modal-feature"><span>👻</span> Horror — most shared niche on TikTok</div>
+      <div class="modal-feature"><span>⚡</span> 30 videos/month (vs 5 free)</div>
+      <div class="modal-feature"><span>▶️</span> YouTube auto-upload included</div>
+    </div>
+    <button class="modal-upgrade-btn">Upgrade to Pro — $29/mo</button>
+    <button class="modal-cancel" onclick="closeUpgrade()">Maybe later</button>
+  </div>
+</div>
+
+<!-- BOTTOM TAB BAR -->
+<div class="tabbar">
+  <button class="tab active" onclick="showPage('home', this)">
+    <span class="tab-icon">🏠</span>Home
+  </button>
+  <button class="tab" onclick="showPage('generate', this)">
+    <span class="tab-icon">⚡</span>Generate
+  </button>
+  <button class="tab" onclick="showPage('queue', this)">
+    <span class="tab-icon">📋</span>Queue
+  </button>
+  <button class="tab" onclick="showPage('analytics', this)">
+    <span class="tab-icon">💰</span>Revenue
+  </button>
+  <button class="tab" onclick="showPage('settings', this)">
+    <span class="tab-icon">⚙️</span>Settings
+  </button>
+</div>
+
+<script>
+let selectedNiche = 'Motivation';
+let selectedVoice = 'Adam';
+let previewAudio = null;
+let currentScript = '';
+
+// ElevenLabs voice IDs (official)
+const VOICE_IDS = {
+  'Adam':   'pNInz6obpgDQGcFmaJgB',
+  'Josh':   'TxGEqnHWrfWFTfGW9XjX',
+  'Arnold': 'VR6AewLTigWG4xSOukaG',
+  'Rachel': '21m00Tcm4TlvDq8ikWAM',
+  'Bella':  'EXAVITQu4vr4xnSDxMaL',
+  'Whisper':'AZnzlk1XvdvUeBnXmlld'
+};
+
+// Load saved keys on startup
+window.addEventListener('load', () => {
+  const el = localStorage.getItem('el_key');
+  const an = localStorage.getItem('an_key');
+  if (el) document.getElementById('elevenLabsKey').value = el;
+  if (an) document.getElementById('anthropicKey').value = an;
+  if (el) updateKeyStatus(el);
+  // Init waveform bars
+  const wf = document.getElementById('voWaveform');
+  if (wf) {
+    for (let i = 0; i < 40; i++) {
+      const b = document.createElement('div');
+      b.className = 'vo-bar';
+      b.style.height = (Math.random() * 28 + 8) + 'px';
+      b.style.animationDelay = (Math.random() * 1) + 's';
+      wf.appendChild(b);
+    }
+  }
+});
+
+function saveKey(val) {
+  localStorage.setItem('el_key', val);
+  updateKeyStatus(val);
+}
+
+function saveAnthropicKey(val) {
+  localStorage.setItem('an_key', val);
+}
+
+function updateKeyStatus(val) {
+  const s = document.getElementById('keyStatus');
+  if (!s) return;
+  if (val.length > 20) {
+    s.textContent = '✓ Key saved — ElevenLabs voiceover enabled';
+    s.style.color = 'var(--accent3)';
+  } else {
+    s.textContent = '';
+  }
+}
+
+function toggleKeyVisibility() {
+  const input = document.getElementById('elevenLabsKey');
+  const btn = document.getElementById('eyeBtn');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+function selectVoice(card, voice) {
+  document.querySelectorAll('.voice-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  selectedVoice = voice;
+}
+
+async function previewVoice(e, voice, text) {
+  e.stopPropagation();
+  const player = document.getElementById('previewPlayer');
+  const label = document.getElementById('previewLabel');
+  if (previewAudio) { previewAudio.pause(); previewAudio = null; }
+  player.style.display = 'block';
+
+  const elKey = localStorage.getItem('el_key');
+  if (elKey && elKey.length > 20) {
+    label.textContent = `Generating ${voice} preview via ElevenLabs...`;
+    try {
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_IDS[voice]}`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': elKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          text: text,
+          model_id: 'eleven_monolingual_v1',
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+        })
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        previewAudio = new Audio(url);
+        label.textContent = `▶ Playing ${voice}...`;
+        previewAudio.play();
+        previewAudio.onended = () => { player.style.display = 'none'; };
+        return;
+      }
+    } catch(err) {}
+  }
+
+  // Fallback: device TTS
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+    if (['Adam','Josh','Arnold'].includes(voice)) {
+      utt.pitch = voice === 'Arnold' ? 0.7 : voice === 'Josh' ? 1.1 : 0.85;
+      utt.rate = voice === 'Josh' ? 1.1 : 0.9;
+      const mv = voices.find(v => v.name.includes('Daniel') || v.name.includes('Alex') || v.name.includes('Fred'));
+      if (mv) utt.voice = mv;
+    } else if (voice === 'Whisper') {
+      utt.pitch = 0.9; utt.rate = 0.75; utt.volume = 0.6;
+    } else {
+      utt.pitch = voice === 'Bella' ? 1.1 : 1.0; utt.rate = 0.9;
+      const fv = voices.find(v => v.name.includes('Samantha') || v.name.includes('Victoria'));
+      if (fv) utt.voice = fv;
+    }
+    label.textContent = elKey ? `ElevenLabs error — using device voice for ${voice}` : `▶ Device preview for ${voice} (add ElevenLabs key for real voice)`;
+    utt.onend = () => { player.style.display = 'none'; };
+    window.speechSynthesis.speak(utt);
+  }
+}
+
+function stopPreview() {
+  if (previewAudio) { previewAudio.pause(); previewAudio = null; }
+  window.speechSynthesis.cancel();
+  document.getElementById('previewPlayer').style.display = 'none';
+}
+
+function showUpgrade() {
+  document.getElementById('upgradeModal').classList.add('show');
+}
+
+function closeUpgrade(e) {
+  if (!e || e.target === document.getElementById('upgradeModal')) {
+    document.getElementById('upgradeModal').classList.remove('show');
+  }
+}
+
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function selectNiche(el, niche) {
+  document.querySelectorAll('.niche-btn:not(.locked)').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedNiche = niche;
+}
+
+// ── STEP 1: GENERATE SCRIPT ──
+async function generateScript() {
+  const btn = document.getElementById('genBtn');
+  const outputBox = document.getElementById('outputBox');
+  const scriptArea = document.getElementById('scriptArea');
+  const scriptActions = document.getElementById('scriptActions');
+  const stepCard = document.getElementById('stepScript');
+  const stepStatus = document.getElementById('stepStatus1');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Writing script...';
+  outputBox.classList.add('visible');
+  scriptArea.innerHTML = '<div class="loading-row"><div class="spinner"></div> Claude is writing your script...</div>';
+  scriptActions.style.display = 'none';
+  stepCard.className = 'step-card active-step';
+  stepStatus.textContent = 'Writing...';
+
+  // Lock steps 2 & 3
+  document.getElementById('stepVoice').className = 'step-card locked-step';
+  document.getElementById('stepVideo').className = 'step-card locked-step';
+  document.getElementById('voiceBody').innerHTML = '<div style="font-size:12px; color:var(--text3); font-family:\'DM Mono\',monospace;">Generate script first</div>';
+  document.getElementById('videoBody').innerHTML = '<div style="font-size:12px; color:var(--text3); font-family:\'DM Mono\',monospace;">Voiceover needed first</div>';
+
+  const anKey = localStorage.getItem('an_key');
+
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (anKey) headers['x-api-key'] = anKey;
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `You are a viral TikTok script writer. Write a gripping 60-second faceless TikTok video script for the niche: "${selectedNiche}".
+
+FORMAT exactly like this:
+🎬 TITLE: [catchy title]
+🪝 HOOK (0-3s): [scroll-stopping opening line]
+📖 STORY (3-55s): [main narration — conversational, punchy, builds tension]
+💥 OUTRO (55-60s): [follow for more CTA]
+#️⃣ HASHTAGS: [5-7 hashtags]
+
+Write it as spoken word. Short sentences. Create real tension. Make them NEED to watch till the end.`
+        }]
+      })
+    });
+
+    const data = await res.json();
+    currentScript = data.content?.map(i => i.text || '').join('') || 'Failed to generate.';
+
+    scriptArea.textContent = '';
+    let i = 0;
+    const chars = currentScript.split('');
+    const iv = setInterval(() => {
+      if (i < chars.length) {
+        scriptArea.textContent += chars[i];
+        i += 4;
+        scriptArea.scrollTop = scriptArea.scrollHeight;
+      } else {
+        scriptArea.textContent = currentScript;
+        clearInterval(iv);
+        scriptActions.style.display = 'grid';
+        stepCard.className = 'step-card done-step';
+        stepStatus.textContent = '✓ Done';
+        // Unlock step 2
+        document.getElementById('stepVoice').className = 'step-card';
+        document.getElementById('voiceBody').innerHTML = '<div style="font-size:12px; color:var(--text2); font-family:\'DM Mono\',monospace; margin-bottom:10px;">Ready — tap below to generate voiceover</div>';
+      }
+    }, 8);
+
+  } catch(err) {
+    currentScript = '';
+    scriptArea.textContent = '⚠️ Could not connect. Add your Anthropic API key in Settings.';
+    scriptActions.style.display = 'grid';
+    stepCard.className = 'step-card';
+    stepStatus.textContent = 'Error';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚡ Generate Script';
+}
+
+// ── STEP 2: GENERATE VOICEOVER ──
+async function startVoiceover() {
+  const voiceStep = document.getElementById('stepVoice');
+  const voiceBody = document.getElementById('voiceBody');
+  const stepStatus2 = document.getElementById('stepStatus2');
+
+  voiceStep.className = 'step-card active-step';
+  stepStatus2.textContent = 'Generating...';
+
+  // Extract just the narration from script (strip emoji headers)
+  const narration = currentScript
+    .replace(/🎬.*\n/, '')
+    .replace(/🪝.*\n/, '')
+    .replace(/📖.*?:\s*/, '')
+    .replace(/💥.*\n[\s\S]*/, '')
+    .replace(/#️⃣.*/, '')
+    .trim();
+
+  const elKey = localStorage.getItem('el_key');
+
+  voiceBody.innerHTML = `
+    <div class="loading-row" style="margin-bottom:10px;">
+      <div class="spinner"></div>
+      <span id="voiceGenLabel">${elKey ? 'Sending to ElevenLabs...' : 'Generating with device voice...'}</span>
+    </div>`;
+
+  if (elKey && elKey.length > 20) {
+    // Real ElevenLabs generation
+    try {
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_IDS[selectedVoice] || VOICE_IDS['Adam']}`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': elKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          text: narration.substring(0, 2500),
+          model_id: 'eleven_monolingual_v1',
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+        })
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        showVoicePlayer(voiceBody, stepStatus2, voiceStep, url, true);
+        return;
+      } else {
+        const err = await res.json();
+        voiceBody.innerHTML = `<div style="font-size:12px; color:var(--accent2); font-family:'DM Mono',monospace;">ElevenLabs error: ${err.detail?.message || 'Check your API key'}</div>`;
+        voiceStep.className = 'step-card';
+        stepStatus2.textContent = 'Error';
+        return;
+      }
+    } catch(err) {
+      // fall through to device TTS
+    }
+  }
+
+  // Device TTS fallback
+  if ('speechSynthesis' in window) {
+    const utt = new SpeechSynthesisUtterance(narration);
+    const voices = window.speechSynthesis.getVoices();
+    utt.pitch = 0.85; utt.rate = 0.9;
+    const mv = voices.find(v => v.name.includes('Daniel') || v.name.includes('Alex'));
+    if (mv) utt.voice = mv;
+    window.speechSynthesis.speak(utt);
+    showVoicePlayer(voiceBody, stepStatus2, voiceStep, null, false);
+  }
+}
+
+function showVoicePlayer(voiceBody, stepStatus2, voiceStep, audioUrl, isReal) {
+  const dur = Math.floor(currentScript.split(' ').length / 2.5);
+  const bars = Array.from({length: 38}, (_, i) =>
+    `<div class="vo-bar" style="height:${Math.random()*24+6}px; animation-delay:${(i*0.05).toFixed(2)}s;"></div>`
+  ).join('');
+
+  voiceBody.innerHTML = `
+    <div class="vo-player">
+      <div class="vo-info">
+        <div class="vo-icon">🎙</div>
+        <div class="vo-meta">
+          <div class="vo-name">${selectedVoice} — ${isReal ? 'ElevenLabs' : 'Device TTS'}</div>
+          <div class="vo-details">~${dur}s · ${currentScript.split(' ').length} words · MP3</div>
+        </div>
+      </div>
+      <div class="vo-waveform" id="voWaveform">${bars}</div>
+      <div class="vo-controls">
+        ${audioUrl ? `<button class="action-btn" onclick="playAudio('${audioUrl}')">▶ Play</button>` : '<button class="action-btn" style="opacity:0.4" disabled>▶ Play</button>'}
+        ${audioUrl ? `<a href="${audioUrl}" download="voiceover_${selectedVoice}.mp3" style="text-decoration:none; flex:1;"><button class="action-btn" style="width:100%">⬇ Download MP3</button></a>` : '<button class="action-btn" style="opacity:0.4; flex:1;" disabled>⬇ Download</button>'}
+        <button class="action-btn primary" onclick="startVideoAssembly()" style="flex:1;">🎬 Assemble →</button>
+      </div>
+      ${!isReal ? '<div style="font-size:10px; color:var(--text3); font-family:\'DM Mono\',monospace; margin-top:8px;">Add ElevenLabs key in Settings for real voice quality</div>' : ''}
+    </div>`;
+
+  voiceStep.className = 'step-card done-step';
+  stepStatus2.textContent = '✓ Ready';
+  // Unlock step 3
+  document.getElementById('stepVideo').className = 'step-card';
+  document.getElementById('videoBody').innerHTML = '<div style="font-size:12px; color:var(--text2); font-family:\'DM Mono\',monospace;">Ready — tap Assemble in step 2</div>';
+}
+
+let currentAudio = null;
+function playAudio(url) {
+  if (currentAudio) { currentAudio.pause(); }
+  currentAudio = new Audio(url);
+  currentAudio.play();
+}
+
+// ── STEP 3: VIDEO ASSEMBLY ──
+function startVideoAssembly() {
+  const videoStep = document.getElementById('stepVideo');
+  const videoBody = document.getElementById('videoBody');
+  const stepStatus3 = document.getElementById('stepStatus3');
+  const bg = document.getElementById('background')?.value || 'Minecraft Parkour';
+
+  videoStep.className = 'step-card active-step';
+  stepStatus3.textContent = 'Assembling...';
+
+  const steps = [
+    '⬇ Fetching background footage...',
+    '🔊 Syncing voiceover to video...',
+    '📝 Burning in captions...',
+    '🎨 Applying color grade...',
+    '📦 Encoding final MP4...'
+  ];
+
+  let stepIdx = 0;
+  videoBody.innerHTML = `<div class="loading-row"><div class="spinner"></div> <span id="assemblyLabel">${steps[0]}</span></div>
+    <div style="margin-top:12px; height:4px; background:var(--border2); border-radius:2px; overflow:hidden;">
+      <div id="assemblyBar" style="height:100%; width:0%; background:var(--accent); border-radius:2px; transition:width 0.4s;"></div>
+    </div>`;
+
+  const iv = setInterval(() => {
+    stepIdx++;
+    const pct = Math.round((stepIdx / steps.length) * 100);
+    const label = document.getElementById('assemblyLabel');
+    const bar = document.getElementById('assemblyBar');
+    if (label) label.textContent = steps[stepIdx] || '✓ Done!';
+    if (bar) bar.style.width = pct + '%';
+
+    if (stepIdx >= steps.length - 1) {
+      clearInterval(iv);
+      setTimeout(() => showVideoReady(videoStep, videoBody, stepStatus3, bg), 600);
+    }
+  }, 900);
+}
+
+function showVideoReady(videoStep, videoBody, stepStatus3, bg) {
+  videoStep.className = 'step-card done-step';
+  stepStatus3.textContent = '✓ Ready';
+  videoBody.innerHTML = `
+    <div style="background:var(--surface2); border:1px solid var(--border2); border-radius:10px; overflow:hidden;">
+      <div style="background: linear-gradient(135deg, #1a1e2a, #0d1117); height:120px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:6px;">
+        <div style="font-size:36px;">🎬</div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text3);">${bg} · ${selectedVoice} voice · captions on</div>
+      </div>
+      <div style="padding:12px;">
+        <div style="font-size:13px; font-weight:600; margin-bottom:10px; color:var(--accent3);">✓ Video Ready!</div>
+        <div class="vo-controls">
+          <button class="action-btn" onclick="alert('In production this downloads your MP4')">⬇ Download</button>
+          <button class="action-btn primary" onclick="addToQueue()" style="flex:1">📤 Add to Queue →</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function addToQueue() {
+  // Show a quick toast
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--accent3);color:#000;padding:10px 20px;border-radius:8px;font-weight:700;font-size:13px;z-index:999;';
+  toast.textContent = '✓ Added to queue!';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+
+function addQueue() { addToQueue(); }
+</script>
+
+function selectVoice(card, voice) {
+  document.querySelectorAll('.voice-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  selectedVoice = voice;
+}
+
+async function previewVoice(e, voice, text) {
+  e.stopPropagation();
+  const player = document.getElementById('previewPlayer');
+  const label = document.getElementById('previewLabel');
+
+  // Stop any playing audio
+  if (previewAudio) { previewAudio.pause(); previewAudio = null; }
+
+  player.style.display = 'block';
+  label.textContent = `Generating ${voice} preview...`;
+
+  try {
+    // Use browser's built-in TTS as a realistic stand-in
+    // (Real version connects to ElevenLabs API with voice ID)
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(text);
+
+      // Pick voice characteristics per selection
+      const voices = window.speechSynthesis.getVoices();
+      if (voice === 'Adam' || voice === 'Josh' || voice === 'Arnold') {
+        utt.pitch = voice === 'Arnold' ? 0.7 : voice === 'Josh' ? 1.1 : 0.85;
+        utt.rate = voice === 'Josh' ? 1.1 : 0.9;
+        const maleVoice = voices.find(v => v.name.toLowerCase().includes('male') || v.name.includes('Daniel') || v.name.includes('Alex') || v.name.includes('Fred'));
+        if (maleVoice) utt.voice = maleVoice;
+      } else if (voice === 'Whisper') {
+        utt.pitch = 0.9;
+        utt.rate = 0.75;
+        utt.volume = 0.6;
+      } else {
+        utt.pitch = voice === 'Bella' ? 1.1 : 1.0;
+        utt.rate = 0.9;
+        const femaleVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.toLowerCase().includes('female'));
+        if (femaleVoice) utt.voice = femaleVoice;
+      }
+
+      label.textContent = `Playing ${voice} — "${text.substring(0,30)}..."`;
+      utt.onend = () => { player.style.display = 'none'; };
+      window.speechSynthesis.speak(utt);
+    } else {
+      label.textContent = 'Preview not supported on this browser';
+      setTimeout(() => { player.style.display = 'none'; }, 2000);
+    }
+  } catch(err) {
+    label.textContent = 'Preview unavailable — ElevenLabs API key needed';
+    setTimeout(() => { player.style.display = 'none'; }, 2500);
+  }
+}
+
+function stopPreview() {
+  window.speechSynthesis.cancel();
+  document.getElementById('previewPlayer').style.display = 'none';
+}
+
+function showUpgrade() {
+  document.getElementById('upgradeModal').classList.add('show');
+}
+
+function closeUpgrade(e) {
+  if (!e || e.target === document.getElementById('upgradeModal')) {
+    document.getElementById('upgradeModal').classList.remove('show');
+  }
+}
+
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function selectNiche(el, niche) {
+  document.querySelectorAll('.niche-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedNiche = niche;
+}
+
+async function generateScript() {
+  const btn = document.getElementById('genBtn');
+  const outputBox = document.getElementById('outputBox');
+  const scriptArea = document.getElementById('scriptArea');
+  const actionRow = document.getElementById('actionRow');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Writing script...';
+  outputBox.classList.add('visible');
+  scriptArea.innerHTML = '<div class="loading-row"><div class="spinner"></div> Claude is writing your script...</div>';
+  actionRow.style.display = 'none';
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{
+          role: "user",
+          content: `You are a viral TikTok script writer. Write a gripping 60-second faceless TikTok video script for the niche: "${selectedNiche}".
+
+FORMAT exactly like this:
+🎬 TITLE: [catchy title]
+🪝 HOOK (0-3s): [scroll-stopping opening line]
+📖 STORY (3-55s): [main narration — conversational, punchy, builds tension]
+💥 OUTRO (55-60s): [follow for more CTA]
+#️⃣ HASHTAGS: [5-7 hashtags]
+
+Write it as spoken word. Short sentences. Create real tension. Make them NEED to watch till the end.`
+        }]
+      })
+    });
+
+    const data = await res.json();
+    const text = data.content?.map(i => i.text || '').join('') || 'Failed to generate. Check API key in settings.';
+
+    scriptArea.textContent = '';
+    let i = 0;
+    const chars = text.split('');
+    const iv = setInterval(() => {
+      if (i < chars.length) {
+        scriptArea.textContent += chars[i];
+        i += 4;
+        scriptArea.scrollTop = scriptArea.scrollHeight;
+      } else {
+        scriptArea.textContent = text;
+        clearInterval(iv);
+        actionRow.style.display = 'grid';
+      }
+    }, 8);
+
+  } catch(e) {
+    scriptArea.textContent = '⚠️ Could not connect to AI. Add your API key in Settings.';
+    actionRow.style.display = 'grid';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚡ Generate Script';
+}
+
+function addQueue() {
+  alert('✅ Added to queue! Will auto-build and post on schedule.');
+}
+
+function buildVid(btn) {
+  btn.textContent = '⏳ Building...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '✅ Queued';
+    btn.style.background = 'var(--accent3)';
+    btn.style.borderColor = 'var(--accent3)';
+    btn.disabled = false;
+  }, 2000);
+}
+</script>
 </body>
 </html>
