@@ -29,9 +29,9 @@
   --amber:   #ffaa00;
   --red:     #ff3344;
   --chalk:   #e8f0ee;
-  --chalk2:  #8aa09c;
-  --chalk3:  #3d5550;
-  --chalk4:  #1e3330;
+  --chalk2:  #a8bcb8;     /* was #8aa09c — bumped for stronger AA */
+  --chalk3:  #7d9590;     /* was #3d5550 — now ~6.4:1 on void (passes AA) */
+  --chalk4:  #5a7570;     /* was #1e3330 — now ~4.5:1 (passes AA for fine print) */
   --mono:    'Space Mono', monospace;
   --display: 'Bebas Neue', sans-serif;
   --serif:   'Playfair Display', serif;
@@ -45,6 +45,8 @@ body {
   background: var(--void);
   color: var(--chalk);
   font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.5;
   min-height: 100vh;
   overflow-x: hidden;
   cursor: default;
@@ -70,6 +72,63 @@ body::after {
     rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px
   );
 }
+
+/* ── A11Y: focus rings (ui-ux-pro-max: focus-states CRITICAL) ── */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.hero-cta:focus-visible,
+.gen-btn:focus-visible,
+.auth-submit:focus-visible,
+.plan-btn:focus-visible,
+.modal-cta:focus-visible {
+  outline-offset: 4px;
+  outline-width: 3px;
+}
+
+/* ── A11Y: respect reduced motion (ui-ux-pro-max: reduced-motion CRITICAL) ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  body::before, body::after { display: none; }
+}
+
+/* ── ICON SYSTEM (ui-ux-pro-max: no-emoji-icons HIGH) ──
+   SVG masks that take currentColor — Lucide icon set */
+.ico {
+  display: inline-block;
+  width: 16px; height: 16px;
+  background-color: currentColor;
+  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  vertical-align: -3px;
+  flex-shrink: 0;
+}
+.ico-lg { width: 22px; height: 22px; vertical-align: -5px; }
+.ico-xl { width: 28px; height: 28px; vertical-align: -7px; }
+
+.ico-crime { -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E"); }
+
+.ico-finance { -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 7 13.5 15.5 8.5 10.5 2 17'/%3E%3Cpolyline points='16 7 22 7 22 13'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 7 13.5 15.5 8.5 10.5 2 17'/%3E%3Cpolyline points='16 7 22 7 22 13'/%3E%3C/svg%3E"); }
+
+.ico-psyche { -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5a3 3 0 1 0-5.99.142A4 4 0 0 0 4 9c0 1.5.5 2.5 1.5 3.5a3.5 3.5 0 0 0 0 5C7 19 8.5 19.5 10 19.5a3 3 0 0 0 2-.5'/%3E%3Cpath d='M12 5a3 3 0 1 1 5.99.142A4 4 0 0 1 20 9c0 1.5-.5 2.5-1.5 3.5a3.5 3.5 0 0 1 0 5C17 19 15.5 19.5 14 19.5a3 3 0 0 1-2-.5'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5a3 3 0 1 0-5.99.142A4 4 0 0 0 4 9c0 1.5.5 2.5 1.5 3.5a3.5 3.5 0 0 0 0 5C7 19 8.5 19.5 10 19.5a3 3 0 0 0 2-.5'/%3E%3Cpath d='M12 5a3 3 0 1 1 5.99.142A4 4 0 0 1 20 9c0 1.5-.5 2.5-1.5 3.5a3.5 3.5 0 0 1 0 5C17 19 15.5 19.5 14 19.5a3 3 0 0 1-2-.5'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E"); }
+
+.ico-horror { -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 10h.01'/%3E%3Cpath d='M15 10h.01'/%3E%3Cpath d='M12 2a8 8 0 0 0-8 8v12l3-3 2.5 3 2.5-3 2.5 3 2.5-3 3 3V10a8 8 0 0 0-8-8z'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 10h.01'/%3E%3Cpath d='M15 10h.01'/%3E%3Cpath d='M12 2a8 8 0 0 0-8 8v12l3-3 2.5 3 2.5-3 2.5 3 2.5-3 3 3V10a8 8 0 0 0-8-8z'/%3E%3C/svg%3E"); }
+
+.ico-history { -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20'/%3E%3Cpath d='M2 12h20'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20'/%3E%3Cpath d='M2 12h20'/%3E%3C/svg%3E"); }
+
+.ico-bolt { -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/%3E%3C/svg%3E"); }
+
+.nc .ico, .n-btn .ico { margin-right: 6px; }
+.n-btn .ico { display: block; margin: 0 auto 6px; width: 22px; height: 22px; vertical-align: 0; }
 
 /* ── SCREEN ROUTING ── */
 .screen { display: none; position: relative; z-index: 2; }
@@ -103,7 +162,7 @@ body::after {
 
 .l-link {
   padding: 6px 12px;
-  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
   text-transform: uppercase; color: var(--chalk3);
   background: none; border: none; cursor: pointer;
   font-family: var(--mono); transition: color 0.15s;
@@ -111,9 +170,8 @@ body::after {
 .l-link:hover { color: var(--chalk2); }
 
 .l-btn {
-  padding: 8px 16px;
-  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-  text-transform: uppercase;
+  padding: 9px 18px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
   font-family: var(--mono); cursor: pointer;
   transition: all 0.15s; border-radius: 2px;
 }
@@ -170,7 +228,7 @@ body::after {
 
 .sys-status {
   display: inline-flex; align-items: center; gap: 8px;
-  font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
   text-transform: uppercase; color: var(--green);
   margin-bottom: 20px;
 }
@@ -201,7 +259,7 @@ body::after {
 }
 
 .hero-sub {
-  font-size: 11px; color: var(--chalk3);
+  font-size: 14px; color: var(--chalk3);
   line-height: 1.9; margin-bottom: 28px;
   max-width: 340px; font-weight: 400;
 }
@@ -228,7 +286,7 @@ body::after {
 .hero-cta:active { transform: translateY(3px); box-shadow: 0 0 20px rgba(0,255,136,0.15), 0 1px 0 var(--green2); }
 
 .hero-fine {
-  font-size: 9px; color: var(--chalk4);
+  font-size: 12px; color: var(--chalk4);
   letter-spacing: 1px; text-transform: uppercase;
 }
 
@@ -250,8 +308,8 @@ body::after {
   line-height: 1; margin-bottom: 4px;
 }
 .proof-label {
-  font-size: 8px; font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.5px; text-transform: uppercase;
   color: var(--chalk4);
 }
 
@@ -275,11 +333,11 @@ body::after {
 }
 .demo-titlebar-left {
   display: flex; align-items: center; gap: 8px;
-  font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
   text-transform: uppercase; color: var(--chalk3);
 }
 .demo-replay-btn {
-  font-size: 8px; font-weight: 700; letter-spacing: 1.5px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
   text-transform: uppercase; color: var(--green);
   background: none; border: 1px solid var(--green3);
   padding: 3px 8px; border-radius: 2px; cursor: pointer;
@@ -303,7 +361,7 @@ body::after {
 .demo-step-num.lit { color: var(--green); text-shadow: 0 0 12px rgba(0,255,136,0.5); }
 .demo-step-body { flex: 1; }
 .demo-step-label {
-  font-size: 8px; font-weight: 700; letter-spacing: 2px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
   text-transform: uppercase; color: var(--chalk4);
   margin-bottom: 8px;
 }
@@ -313,7 +371,7 @@ body::after {
 .nc {
   padding: 4px 10px;
   background: var(--surface); border: 1px solid var(--rim);
-  border-radius: 2px; font-size: 10px; color: var(--chalk3);
+  border-radius: 2px; font-size: 12px; color: var(--chalk3);
   transition: all 0.35s; font-family: var(--mono);
 }
 .nc.lit {
@@ -325,7 +383,7 @@ body::after {
 
 /* typewriter script */
 .demo-script-out {
-  font-size: 10px; color: var(--chalk2);
+  font-size: 13px; color: var(--chalk2);
   line-height: 1.8; min-height: 40px;
   font-weight: 400;
 }
@@ -408,9 +466,9 @@ body::after {
 /* HOW IT WORKS */
 .l-section { padding: 32px 16px; border-top: 1px solid var(--rim); }
 .l-eyebrow {
-  font-size: 8px; font-weight: 700; letter-spacing: 3px;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
   text-transform: uppercase; color: var(--green);
-  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
 }
 .l-eyebrow::before {
   content: '';
@@ -443,10 +501,10 @@ body::after {
 }
 .hiw-text { padding: 14px 16px; }
 .hiw-title {
-  font-size: 12px; font-weight: 700; color: var(--chalk);
-  margin-bottom: 3px; letter-spacing: 0.3px;
+  font-size: 15px; font-weight: 700; color: var(--chalk);
+  margin-bottom: 4px; letter-spacing: 0.1px;
 }
-.hiw-sub { font-size: 10px; color: var(--chalk3); line-height: 1.7; font-weight: 400; }
+.hiw-sub { font-size: 12px; color: var(--chalk3); line-height: 1.7; font-weight: 400; }
 
 /* PRICING */
 .pricing-stack { display: flex; flex-direction: column; gap: 8px; }
@@ -465,7 +523,7 @@ body::after {
   box-shadow: 0 0 8px var(--green);
 }
 .plan-tier {
-  font-size: 8px; font-weight: 700; letter-spacing: 2.5px;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px;
   text-transform: uppercase; color: var(--chalk4); margin-bottom: 10px;
 }
 .plan-tier.pro { color: var(--green); }
@@ -480,14 +538,14 @@ body::after {
   color: var(--chalk3); font-weight: 400;
   vertical-align: baseline;
 }
-.plan-desc { font-size: 10px; color: var(--chalk3); margin-bottom: 16px; line-height: 1.6; font-weight: 400; }
+.plan-desc { font-size: 13px; color: var(--chalk3); margin-bottom: 16px; line-height: 1.6; font-weight: 400; }
 .plan-feats { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
 .plan-feat {
   display: flex; align-items: center; gap: 10px;
-  font-size: 10px; color: var(--chalk2); font-weight: 400;
+  font-size: 13px; color: var(--chalk2); font-weight: 400;
 }
-.ck { color: var(--green); font-size: 11px; }
-.cx { color: var(--chalk4); font-size: 11px; }
+.ck { color: var(--green); font-size: 12px; }
+.cx { color: var(--chalk4); font-size: 12px; }
 .plan-btn {
   width: 100%; padding: 13px;
   font-family: var(--display); font-size: 1.1rem;
@@ -502,14 +560,14 @@ body::after {
 .faq-list { display: flex; flex-direction: column; }
 .faq-row { border-bottom: 1px solid var(--rim); }
 .faq-q {
-  width: 100%; text-align: left; padding: 14px 0;
+  width: 100%; text-align: left; padding: 15px 0;
   background: none; border: none; color: var(--chalk);
-  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  font-family: var(--mono); font-size: 14px; font-weight: 700;
   cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px;
 }
-.faq-arr { color: var(--chalk4); font-size: 10px; transition: transform 0.2s, color 0.2s; flex-shrink: 0; }
+.faq-arr { color: var(--chalk4); font-size: 12px; transition: transform 0.2s, color 0.2s; flex-shrink: 0; }
 .faq-row.open .faq-arr { transform: rotate(180deg); color: var(--green); }
-.faq-a { font-size: 10px; color: var(--chalk3); line-height: 1.8; padding-bottom: 14px; display: none; font-weight: 400; }
+.faq-a { font-size: 13px; color: var(--chalk3); line-height: 1.8; padding-bottom: 14px; display: none; font-weight: 400; }
 .faq-row.open .faq-a { display: block; }
 
 /* FOOTER */
@@ -521,7 +579,7 @@ body::after {
   font-family: var(--display); font-size: 1.3rem; letter-spacing: 2px; margin-bottom: 4px;
 }
 .l-footer-logo em { font-style: normal; color: var(--green); }
-.l-footer-sub { font-size: 9px; color: var(--chalk4); letter-spacing: 1px; text-transform: uppercase; }
+.l-footer-sub { font-size: 12px; color: var(--chalk4); letter-spacing: 0.5px; text-transform: uppercase; }
 
 
 /* ═══════════════════════════════════
@@ -546,7 +604,7 @@ body::after {
 }
 .auth-logo em { font-style: normal; color: var(--green); text-shadow: 0 0 20px rgba(0,255,136,0.4); }
 .auth-tagline {
-  font-size: 8px; font-weight: 700; letter-spacing: 3px;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
   text-transform: uppercase; color: var(--chalk4);
   text-align: center; margin-bottom: 28px;
 }
@@ -573,7 +631,7 @@ body::after {
 .auth-field { margin-bottom: 14px; }
 .auth-field label {
   display: block;
-  font-size: 8px; font-weight: 700; letter-spacing: 2px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
   text-transform: uppercase; color: var(--chalk3); margin-bottom: 7px;
 }
 .auth-field input {
@@ -595,11 +653,11 @@ body::after {
   transition: all 0.15s;
 }
 .auth-submit:active { transform: scale(0.98); }
-.auth-err { font-size: 10px; color: var(--red); text-align: center; margin-top: 10px; min-height: 15px; }
-.auth-switch { text-align: center; font-size: 10px; color: var(--chalk4); margin-top: 14px; }
+.auth-err { font-size: 12px; color: var(--red); text-align: center; margin-top: 10px; min-height: 15px; }
+.auth-switch { text-align: center; font-size: 13px; color: var(--chalk4); margin-top: 16px; }
 .auth-switch a { color: var(--green); cursor: pointer; }
 .auth-back {
-  font-size: 10px; color: var(--chalk4); cursor: pointer;
+  font-size: 12px; color: var(--chalk4); cursor: pointer;
   margin-top: 16px; text-align: center; letter-spacing: 0.5px;
 }
 .auth-back:hover { color: var(--chalk2); }
@@ -635,7 +693,7 @@ body::after {
 .a-nav-r { display: flex; align-items: center; gap: 10px; }
 .live-badge {
   display: flex; align-items: center; gap: 5px;
-  font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
   color: var(--green); background: rgba(0,255,136,0.06);
   border: 1px solid var(--green3); padding: 4px 9px; border-radius: 2px;
 }
@@ -656,7 +714,7 @@ body::after {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   padding: 9px 4px 8px; gap: 3px;
-  font-size: 8px; font-weight: 700; letter-spacing: 1.5px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
   text-transform: uppercase; color: var(--chalk4);
   background: none; border: none; cursor: pointer;
   font-family: var(--mono); transition: color 0.2s; position: relative;
@@ -678,7 +736,7 @@ body::after {
 /* page header */
 .pg-head { margin-bottom: 20px; }
 .pg-eye {
-  font-size: 8px; font-weight: 700; letter-spacing: 2.5px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
   text-transform: uppercase; color: var(--chalk4); margin-bottom: 5px;
 }
 .pg-title {
@@ -693,16 +751,16 @@ body::after {
   border-radius: 3px; padding: 13px 15px; margin-bottom: 16px;
 }
 .use-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.use-label { font-size: 9px; font-weight: 700; color: var(--chalk2); letter-spacing: 0.5px; }
-.use-count { font-size: 9px; color: var(--chalk4); }
+.use-label { font-size: 12px; font-weight: 700; color: var(--chalk2); letter-spacing: 0.3px; }
+.use-count { font-size: 12px; color: var(--chalk4); }
 .use-track { height: 2px; background: var(--rim); border-radius: 1px; overflow: hidden; }
 .use-fill {
   height: 100%; background: var(--green); border-radius: 1px;
   transition: width 0.5s; box-shadow: 0 0 6px rgba(0,255,136,0.6);
 }
 .use-cta { margin-top: 9px; display: flex; justify-content: space-between; align-items: center; }
-.use-cta-text { font-size: 9px; color: var(--chalk4); font-weight: 400; }
-.use-up-btn { font-size: 9px; font-weight: 700; color: var(--green); background: none; border: none; cursor: pointer; font-family: var(--mono); letter-spacing: 0.5px; }
+.use-cta-text { font-size: 12px; color: var(--chalk4); font-weight: 400; }
+.use-up-btn { font-size: 12px; font-weight: 700; color: var(--green); background: none; border: none; cursor: pointer; font-family: var(--mono); letter-spacing: 0.3px; }
 
 /* quick actions */
 .q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
@@ -722,7 +780,7 @@ body::after {
   color: var(--void); margin-bottom: 2px;
 }
 .q-btn.sec .q-btn-head { color: var(--chalk); }
-.q-btn-sub { font-size: 9px; color: rgba(0,0,0,0.5); }
+.q-btn-sub { font-size: 12px; color: rgba(0,0,0,0.5); }
 .q-btn.sec .q-btn-sub { color: var(--chalk4); }
 
 /* stat tiles */
@@ -738,22 +796,22 @@ body::after {
   box-shadow: 0 0 6px var(--tl, transparent);
 }
 .stat-label {
-  font-size: 8px; font-weight: 700; letter-spacing: 2px;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px;
   text-transform: uppercase; color: var(--chalk4); margin-bottom: 8px;
 }
 .stat-val {
   font-family: var(--display); font-size: 2.4rem;
   letter-spacing: 1px; line-height: 1; color: var(--chalk);
 }
-.stat-delta { font-size: 9px; color: var(--green); margin-top: 6px; font-weight: 700; }
+.stat-delta { font-size: 12px; color: var(--green); margin-top: 6px; font-weight: 700; }
 
 /* section head */
 .sec-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .sec-title { font-family: var(--display); font-size: 1.2rem; letter-spacing: 2px; }
 .sec-badge {
-  font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
   background: rgba(0,255,136,0.08); color: var(--green);
-  border: 1px solid var(--green3); padding: 3px 8px; border-radius: 2px;
+  border: 1px solid var(--green3); padding: 4px 10px; border-radius: 2px;
 }
 
 /* video items */
@@ -772,14 +830,14 @@ body::after {
 }
 .v-info { flex: 1; min-width: 0; }
 .v-title {
-  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  font-family: var(--mono); font-size: 14px; font-weight: 700;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   margin-bottom: 3px;
 }
-.v-meta { font-size: 9px; color: var(--chalk4); margin-bottom: 7px; font-weight: 400; }
+.v-meta { font-size: 12px; color: var(--chalk4); margin-bottom: 7px; font-weight: 400; }
 .v-status {
-  font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  padding: 2px 7px; border-radius: 2px; display: inline-block;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px; display: inline-block;
 }
 .s-live { background: rgba(0,255,136,0.08); color: var(--green); border: 1px solid var(--green3); }
 .s-q    { background: rgba(255,170,0,0.08); color: var(--amber); border: 1px solid rgba(255,170,0,0.2); }
@@ -791,36 +849,37 @@ body::after {
   border-radius: 3px; padding: 16px; margin-bottom: 10px;
 }
 .f-label {
-  font-size: 8px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--chalk4); margin-bottom: 10px; display: block;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--chalk4); margin-bottom: 12px; display: block;
 }
 .tier-tag {
-  font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  margin-bottom: 8px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+  margin-bottom: 10px;
 }
 .tier-tag.free { color: var(--green); }
 .tier-tag.pro  { color: var(--amber); }
 
 .n-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; }
 .n-btn {
-  padding: 12px 6px; background: var(--surface); border: 1px solid var(--rim);
+  padding: 14px 8px; background: var(--surface); border: 1px solid var(--rim);
   border-radius: 2px; text-align: center; cursor: pointer;
-  font-size: 10px; font-weight: 700; color: var(--chalk4);
+  font-size: 12px; font-weight: 700; color: var(--chalk4);
   font-family: var(--mono); letter-spacing: 0.3px;
   transition: all 0.15s; user-select: none;
 }
 .n-btn .ei { font-size: 18px; display: block; margin-bottom: 5px; }
+.n-btn .ico { display: block; margin: 0 auto 6px; width: 22px; height: 22px; vertical-align: 0; }
 .n-btn:active { transform: scale(0.96); }
 .n-btn.sel { border-color: var(--green); background: rgba(0,255,136,0.06); color: var(--green); box-shadow: inset 0 0 0 1px rgba(0,255,136,0.08); }
 .n-btn.locked { opacity: 0.35; position: relative; }
-.n-btn.locked::after { content:'🔒'; position:absolute; top:4px; right:5px; font-size:8px; }
+.n-btn.locked::after { content:'🔒'; position:absolute; top:4px; right:5px; font-size: 12px; }
 
 .sel-wrap { position: relative; }
-.sel-wrap::after { content:'▾'; position:absolute; right:11px; top:50%; transform:translateY(-50%); color:var(--chalk4); pointer-events:none; font-size:11px; }
+.sel-wrap::after { content:'▾'; position:absolute; right:11px; top:50%; transform:translateY(-50%); color:var(--chalk4); pointer-events:none; font-size:12px; }
 .sel-inp {
   width: 100%; background: var(--void); border: 1px solid var(--rim2);
   border-radius: 2px; padding: 10px 12px; color: var(--chalk);
-  font-family: var(--mono); font-size: 11px; outline: none;
+  font-family: var(--mono); font-size: 12px; outline: none;
   -webkit-appearance: none; transition: border-color 0.2s;
 }
 .sel-inp:focus { border-color: var(--green); }
@@ -843,13 +902,13 @@ body::after {
 .va-m { background: rgba(100,150,255,0.1); color: #64a0ff; }
 .va-f { background: rgba(255,100,160,0.1); color: #ff64a0; }
 .va-x { background: rgba(0,255,136,0.07); color: var(--green); }
-.vc-name { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--chalk); display: flex; align-items: center; gap: 5px; }
-.vc-def { font-size: 7px; letter-spacing: 1px; background: var(--green); color: var(--void); padding: 1px 4px; border-radius: 1px; font-weight: 700; }
-.vc-desc { font-size: 9px; color: var(--chalk4); margin-top: 1px; font-weight: 400; }
+.vc-name { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--chalk); display: flex; align-items: center; gap: 5px; }
+.vc-def { font-size: 12px; letter-spacing: 1px; background: var(--green); color: var(--void); padding: 1px 4px; border-radius: 1px; font-weight: 700; }
+.vc-desc { font-size: 12px; color: var(--chalk4); margin-top: 2px; font-weight: 400; }
 .vc-prev {
-  width: 100%; padding: 5px; background: var(--void); border: 1px solid var(--rim);
-  border-radius: 1px; color: var(--chalk4); font-size: 9px; font-weight: 700;
-  cursor: pointer; font-family: var(--mono); letter-spacing: 0.5px; transition: all 0.15s;
+  width: 100%; padding: 7px; background: var(--void); border: 1px solid var(--rim);
+  border-radius: 1px; color: var(--chalk4); font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: var(--mono); letter-spacing: 0.3px; transition: all 0.15s;
 }
 .vc.sel .vc-prev { border-color: var(--green3); color: var(--green); }
 
@@ -862,7 +921,7 @@ body::after {
 .prev-wave span { display: block; width: 2px; border-radius: 1px; background: var(--green); animation: pw .8s ease-in-out infinite; }
 .prev-wave span:nth-child(1){height:5px;animation-delay:0s} .prev-wave span:nth-child(2){height:11px;animation-delay:.1s} .prev-wave span:nth-child(3){height:18px;animation-delay:.2s} .prev-wave span:nth-child(4){height:11px;animation-delay:.3s} .prev-wave span:nth-child(5){height:5px;animation-delay:.4s}
 @keyframes pw { 0%,100%{transform:scaleY(0.3);opacity:0.4} 50%{transform:scaleY(1);opacity:1} }
-.prev-lbl { flex: 1; font-size: 9px; color: var(--chalk3); }
+.prev-lbl { flex: 1; font-size: 12px; color: var(--chalk3); }
 .prev-stop { background:none; border:none; color:var(--chalk4); cursor:pointer; padding:3px; font-size:12px; }
 
 /* toggles */
@@ -871,8 +930,8 @@ body::after {
   padding: 12px 0; border-bottom: 1px solid var(--rim);
 }
 .tog-row:last-child { border-bottom: none; }
-.tog-info { font-size: 11px; color: var(--chalk); }
-.tog-info small { display: block; font-size: 9px; color: var(--chalk4); margin-top: 2px; font-weight: 400; }
+.tog-info { font-size: 13px; color: var(--chalk); }
+.tog-info small { display: block; font-size: 12px; color: var(--chalk4); margin-top: 2px; font-weight: 400; }
 .tog {
   width: 42px; height: 24px; border-radius: 12px;
   background: var(--surface); border: 1px solid var(--rim2);
@@ -905,15 +964,15 @@ body::after {
 .out-box.vis { display: block; }
 .script-out {
   background: var(--void); border: 1px solid var(--rim2); border-radius: 2px;
-  padding: 13px; font-size: 10px; color: var(--chalk3); line-height: 1.9;
+  padding: 14px; font-size: 13px; color: var(--chalk3); line-height: 1.8;
   max-height: 260px; overflow-y: auto; white-space: pre-wrap; margin-bottom: 9px; font-weight: 400;
 }
-.ld-row { display: flex; align-items: center; gap: 7px; color: var(--green); font-size: 10px; }
+.ld-row { display: flex; align-items: center; gap: 8px; color: var(--green); font-size: 13px; }
 .spin { width: 11px; height: 11px; border: 2px solid rgba(0,255,136,0.2); border-top-color: var(--green); border-radius: 50%; animation: spin 0.75s linear infinite; flex-shrink: 0; }
 @keyframes spin { to{transform:rotate(360deg)} }
 .act-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
 .act-btn {
-  padding: 10px 6px; border-radius: 2px; font-size: 10px; font-weight: 700;
+  padding: 11px 8px; border-radius: 2px; font-size: 12px; font-weight: 700;
   font-family: var(--mono); cursor: pointer; border: 1px solid var(--rim2);
   background: var(--surface); color: var(--chalk); text-align: center;
   transition: all 0.12s; letter-spacing: 0.3px;
@@ -934,12 +993,12 @@ body::after {
   width: 24px; height: 24px; border-radius: 50%;
   background: var(--surface); border: 1px solid var(--rim2);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--display); font-size: 11px; letter-spacing: 1px; flex-shrink: 0;
+  font-family: var(--display); font-size: 12px; letter-spacing: 1px; flex-shrink: 0;
 }
 .step-card.as .st-n { background: var(--green); color: var(--void); border-color: var(--green); box-shadow: 0 0 8px rgba(0,255,136,0.4); }
 .step-card.dn .st-n { background: var(--green2); color: var(--void); border-color: var(--green2); }
-.st-title { font-family: var(--mono); font-size: 12px; font-weight: 700; flex: 1; }
-.st-status { font-size: 9px; color: var(--chalk4); }
+.st-title { font-family: var(--mono); font-size: 14px; font-weight: 700; flex: 1; }
+.st-status { font-size: 12px; color: var(--chalk4); }
 .st-body { padding: 2px 0; }
 
 /* vo player */
@@ -947,8 +1006,8 @@ body::after {
 .vo-info { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
 .vo-icon { font-size: 20px; }
 .vo-meta { flex: 1; }
-.vo-name { font-family: var(--mono); font-size: 11px; font-weight: 700; }
-.vo-det { font-size: 9px; color: var(--chalk4); margin-top: 1px; font-weight: 400; }
+.vo-name { font-family: var(--mono); font-size: 13px; font-weight: 700; }
+.vo-det { font-size: 12px; color: var(--chalk4); margin-top: 2px; font-weight: 400; }
 .vo-wave { height: 32px; background: var(--deep); border: 1px solid var(--rim); border-radius: 2px; display: flex; align-items: center; gap: 2px; padding: 0 8px; margin-bottom: 9px; overflow: hidden; }
 .vo-bar { width: 2px; border-radius: 1px; background: var(--green); opacity: 0.5; animation: vbar 1.2s ease-in-out infinite; }
 .vo-ctrls { display: flex; gap: 5px; }
@@ -956,22 +1015,22 @@ body::after {
 /* channels */
 .ch-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--panel); border: 1px solid var(--rim); border-radius: 3px; margin-bottom: 7px; }
 .ch-av { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; border: 1px solid var(--rim2); }
-.ch-name { font-family: var(--mono); font-size: 12px; font-weight: 700; }
-.ch-sub { font-size: 9px; color: var(--chalk4); margin-top: 2px; font-weight: 400; }
+.ch-name { font-family: var(--mono); font-size: 14px; font-weight: 700; }
+.ch-sub { font-size: 12px; color: var(--chalk4); margin-top: 3px; font-weight: 400; }
 .ch-stats { margin-left: auto; text-align: right; flex-shrink: 0; }
 .ch-views { font-family: var(--display); font-size: 1.2rem; letter-spacing: 1px; }
-.ch-trend { font-size: 9px; color: var(--green); margin-top: 1px; }
-.add-ch { width: 100%; padding: 13px; border: 1px dashed var(--rim2); border-radius: 3px; background: none; color: var(--chalk4); font-family: var(--mono); font-size: 11px; font-weight: 700; cursor: pointer; margin-top: 4px; }
+.ch-trend { font-size: 12px; color: var(--green); margin-top: 2px; }
+.add-ch { width: 100%; padding: 13px; border: 1px dashed var(--rim2); border-radius: 3px; background: none; color: var(--chalk4); font-family: var(--mono); font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 4px; }
 
 /* revenue */
 .rev-big { text-align: center; padding: 28px 16px 24px; background: var(--panel); border: 1px solid var(--rim); border-radius: 4px; margin-bottom: 12px; position: relative; overflow: hidden; }
 .rev-big::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0,255,136,0.04) 0%, transparent 70%); pointer-events: none; }
-.rev-label { font-size: 8px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--chalk4); margin-bottom: 10px; }
+.rev-label { font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--chalk4); margin-bottom: 10px; }
 .rev-num { font-family: var(--display); font-size: 4rem; letter-spacing: 1px; color: var(--green); line-height: 1; text-shadow: 0 0 40px rgba(0,255,136,0.3); }
-.rev-sub { font-size: 9px; color: var(--chalk4); margin-top: 8px; font-weight: 400; }
+.rev-sub { font-size: 12px; color: var(--chalk4); margin-top: 10px; font-weight: 400; }
 .inc-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--rim); }
 .inc-row:last-child { border-bottom: none; }
-.inc-src { font-size: 11px; color: var(--chalk2); font-weight: 400; }
+.inc-src { font-size: 13px; color: var(--chalk2); font-weight: 400; }
 .inc-amt { font-family: var(--display); font-size: 1.2rem; letter-spacing: 1px; }
 .prog-bar { height: 2px; background: var(--rim); border-radius: 1px; margin-top: 5px; overflow: hidden; }
 .prog-fill { height: 100%; border-radius: 1px; }
@@ -981,12 +1040,12 @@ body::after {
 .set-inp-wrap input {
   width: 100%; background: var(--void); border: 1px solid var(--rim2);
   border-radius: 2px; padding: 10px 36px 10px 12px;
-  color: var(--chalk); font-family: var(--mono); font-size: 11px; outline: none;
+  color: var(--chalk); font-family: var(--mono); font-size: 12px; outline: none;
   transition: border-color 0.2s;
 }
 .set-inp-wrap input:focus { border-color: var(--green); }
 .set-eye { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--chalk4); font-size: 13px; cursor: pointer; }
-.key-ok { font-size: 9px; margin-top: 5px; min-height: 14px; color: var(--chalk4); font-weight: 400; }
+.key-ok { font-size: 12px; margin-top: 6px; min-height: 16px; color: var(--chalk4); font-weight: 400; }
 
 /* upgrade modal */
 .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(4px); z-index: 200; align-items: flex-end; justify-content: center; }
@@ -1002,18 +1061,170 @@ body::after {
 @keyframes mslide { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
 .modal-handle { width: 32px; height: 3px; background: var(--rim2); border-radius: 2px; margin: 0 auto 20px; }
 .modal-title { font-family: var(--display); font-size: 2rem; letter-spacing: 2px; margin-bottom: 8px; }
-.modal-sub { font-size: 10px; color: var(--chalk3); margin-bottom: 20px; line-height: 1.7; font-weight: 400; }
+.modal-sub { font-size: 13px; color: var(--chalk3); margin-bottom: 20px; line-height: 1.7; font-weight: 400; }
 .modal-feats { margin-bottom: 20px; }
-.modal-feat { display: flex; align-items: center; gap: 10px; font-size: 10px; color: var(--chalk2); padding: 8px 0; border-bottom: 1px solid var(--rim); font-weight: 400; }
+.modal-feat { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--chalk2); padding: 9px 0; border-bottom: 1px solid var(--rim); font-weight: 400; }
 .modal-feat:last-child { border-bottom: none; }
-.modal-feat .ic { font-size: 15px; width: 22px; text-align: center; }
+.modal-feat .ic { font-size: 15px; width: 22px; text-align: center; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--green); }
 .modal-cta { width: 100%; padding: 14px; background: var(--green); border: none; border-radius: 2px; color: var(--void); font-family: var(--display); font-size: 1.2rem; letter-spacing: 3px; cursor: pointer; margin-bottom: 10px; box-shadow: 0 0 24px rgba(0,255,136,0.3); }
-.modal-skip { display: block; width: 100%; text-align: center; padding: 9px; background: none; border: none; color: var(--chalk4); font-family: var(--mono); font-size: 9px; cursor: pointer; letter-spacing: 1px; }
+.modal-skip { display: block; width: 100%; text-align: center; padding: 9px; background: none; border: none; color: var(--chalk4); font-family: var(--mono); font-size: 12px; cursor: pointer; letter-spacing: 0.5px; }
 
 /* also constrain auth screen on desktop */
 @media (min-width: 560px) {
   #screen-auth { background: var(--void); }
   #screen-landing .l-hero { min-height: auto; }
+}
+
+/* ═════════════════════════════════════════════════
+   TABLET (≥768px) — ui-ux-pro-max: breakpoint-consistency
+═════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  body { font-size: 16px; }
+
+  .l-nav { padding: 0 40px; height: 60px; }
+  .l-logo { font-size: 1.8rem; }
+  .l-link { padding: 8px 14px; font-size: 13px; min-height: 44px; display: inline-flex; align-items: center; }
+  .l-btn { padding: 11px 20px; font-size: 13px; min-height: 44px; }
+
+  .l-hero-left { padding: 80px 40px 60px; max-width: 720px; margin: 0 auto; }
+  .hero-h1 { font-size: clamp(5rem, 8vw, 7rem); }
+  .hero-sub { font-size: 16px; max-width: 480px; }
+  .hero-cta { font-size: 1.5rem; padding: 18px 28px; }
+
+  .proof-row {
+    max-width: 720px; margin: 0 auto 48px;
+    padding: 0 40px;
+  }
+  .proof-num { font-size: 2.6rem; }
+
+  .demo-wrap { padding: 0 40px 56px; max-width: 800px; margin: 0 auto; }
+
+  .l-section { padding: 64px 40px; max-width: 800px; margin: 0 auto; }
+  .l-h2 { font-size: 3.6rem; }
+}
+
+/* ═════════════════════════════════════════════════
+   DESKTOP (≥1024px) — ui-ux-pro-max: container-width, content-priority
+═════════════════════════════════════════════════ */
+@media (min-width: 1024px) {
+
+  /* NAV — sticky, content max-width inside */
+  .l-nav { padding: 0 56px; height: 68px; }
+  .l-logo { font-size: 2rem; }
+  .l-link { font-size: 13px; padding: 8px 16px; }
+
+  /* HERO — centered, dramatic, max-width 1100px */
+  .l-hero-left {
+    padding: 100px 56px 40px;
+    max-width: 880px;
+    align-items: center;
+    text-align: center;
+  }
+  .sys-status { align-self: center; font-size: 13px; }
+  .hero-h1 {
+    font-size: clamp(6rem, 9vw, 9rem);
+    text-align: center;
+    letter-spacing: 3px;
+  }
+  .hero-sub {
+    font-size: 17px;
+    line-height: 2;
+    max-width: 580px;
+    margin: 0 auto 36px;
+    text-align: center;
+  }
+  .hero-cta {
+    max-width: 460px;
+    margin: 0 auto 14px;
+    font-size: 1.6rem;
+    padding: 20px 32px;
+    letter-spacing: 4px;
+  }
+  .hero-fine {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+
+  /* PROOF ROW — sit closer below hero, more spacing */
+  .proof-row {
+    max-width: 1080px;
+    margin: 0 auto 72px;
+    padding: 32px 56px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .proof-cell { padding: 20px 16px; }
+  .proof-num { font-size: 3.2rem; letter-spacing: 3px; }
+  .proof-label { font-size: 12px; letter-spacing: 2px; }
+
+  /* LIVE DEMO — full max-width */
+  .demo-wrap {
+    max-width: 1080px;
+    padding: 0 56px 80px;
+    margin: 0 auto;
+  }
+  .demo-row { padding: 18px 22px; gap: 18px; }
+  .demo-step-num { font-size: 2rem; width: 36px; }
+  .demo-step-label { font-size: 12px; }
+  .demo-script-out { font-size: 14px; }
+
+  /* SECTIONS — centered max-width */
+  .l-section {
+    max-width: 1100px;
+    padding: 96px 56px;
+    margin: 0 auto;
+  }
+  .l-eyebrow { justify-content: center; font-size: 13px; }
+  .l-h2 {
+    font-size: 5rem;
+    text-align: center;
+    letter-spacing: 3px;
+    margin-bottom: 56px;
+  }
+
+  /* HOW IT WORKS — 2-column grid */
+  .hiw-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .hiw-item { margin-bottom: 0; }
+  .hiw-n { font-size: 2.4rem; }
+  .hiw-text { padding: 24px; }
+  .hiw-title { font-size: 17px; }
+  .hiw-sub { font-size: 14px; }
+
+  /* PRICING — 2-column side-by-side */
+  .pricing-stack {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 880px;
+    margin: 0 auto;
+    align-items: stretch;
+  }
+  .plan { padding: 32px 28px; display: flex; flex-direction: column; }
+  .plan-feats { flex: 1; }
+  .plan-price { font-size: 4.2rem; }
+  .plan-desc { font-size: 14px; }
+  .plan-feat { font-size: 14px; padding: 4px 0; }
+
+  /* FAQ — narrower for readability (line-length-control) */
+  .faq-list { max-width: 760px; margin: 0 auto; }
+  .faq-q { font-size: 16px; padding: 18px 0; }
+  .faq-a { font-size: 14px; }
+
+  /* CTA section + footer */
+  .l-footer { padding: 32px 56px; }
+  .l-footer-logo { font-size: 1.8rem; }
+}
+
+/* Wider breakpoint for very large screens */
+@media (min-width: 1440px) {
+  .l-nav { padding: 0 80px; }
+  .l-section { padding: 112px 80px; }
+  .demo-wrap { padding: 0 80px 96px; }
+  .proof-row { padding: 32px 80px; }
 }
 </style>
 </head>
@@ -1097,11 +1308,11 @@ body::after {
         <div class="demo-step-body">
           <div class="demo-step-label">Select niche</div>
           <div class="niche-chips">
-            <div class="nc" id="dn0">😨 True Crime</div>
-            <div class="nc" id="dn1">💰 Finance</div>
-            <div class="nc" id="dn2">🧠 Psychology</div>
-            <div class="nc" id="dn3">👻 Horror</div>
-            <div class="nc" id="dn4">🌍 History</div>
+            <div class="nc" id="dn0"><span class="ico ico-crime" aria-hidden="true"></span>True Crime</div>
+            <div class="nc" id="dn1"><span class="ico ico-finance" aria-hidden="true"></span>Finance</div>
+            <div class="nc" id="dn2"><span class="ico ico-psyche" aria-hidden="true"></span>Psychology</div>
+            <div class="nc" id="dn3"><span class="ico ico-horror" aria-hidden="true"></span>Horror</div>
+            <div class="nc" id="dn4"><span class="ico ico-history" aria-hidden="true"></span>History</div>
           </div>
         </div>
       </div>
@@ -1122,7 +1333,7 @@ body::after {
           <div class="demo-voice-row" id="demoVoice">
             <div class="v-avatar">A</div>
             <div style="flex:1">
-              <div style="font-size:10px;font-weight:700;margin-bottom:4px">ADAM — ELEVENLABS AI</div>
+              <div style="font-size:12px;font-weight:700;margin-bottom:4px">ADAM — ELEVENLABS AI</div>
               <div class="v-wave" id="vWave">
                 <div class="v-bar" style="height:3px"></div><div class="v-bar" style="height:8px;animation-delay:.07s"></div><div class="v-bar" style="height:15px;animation-delay:.14s"></div><div class="v-bar" style="height:21px;animation-delay:.21s"></div><div class="v-bar" style="height:24px;animation-delay:.28s"></div><div class="v-bar" style="height:21px;animation-delay:.35s"></div><div class="v-bar" style="height:15px;animation-delay:.42s"></div><div class="v-bar" style="height:9px;animation-delay:.49s"></div><div class="v-bar" style="height:4px;animation-delay:.56s"></div><div class="v-bar" style="height:12px;animation-delay:.63s"></div><div class="v-bar" style="height:19px;animation-delay:.7s"></div><div class="v-bar" style="height:23px;animation-delay:.77s"></div><div class="v-bar" style="height:17px;animation-delay:.84s"></div><div class="v-bar" style="height:10px;animation-delay:.91s"></div><div class="v-bar" style="height:5px;animation-delay:.98s"></div><div class="v-bar" style="height:14px;animation-delay:1.05s"></div><div class="v-bar" style="height:20px;animation-delay:1.12s"></div><div class="v-bar" style="height:16px;animation-delay:1.19s"></div><div class="v-bar" style="height:8px;animation-delay:1.26s"></div><div class="v-bar" style="height:4px;animation-delay:1.33s"></div>
               </div>
@@ -1139,12 +1350,12 @@ body::after {
           <div class="demo-vid-card" id="demoVid">
             <div class="demo-vid-screen">
               <div style="font-size:24px;position:relative;z-index:1" id="demoEmoji">🎬</div>
-              <div style="font-size:9px;color:var(--chalk4);position:relative;z-index:1;letter-spacing:1px;text-transform:uppercase;font-weight:700" id="demoStatus">ASSEMBLING...</div>
+              <div style="font-size: 12px;color:var(--chalk4);position:relative;z-index:1;letter-spacing:1px;text-transform:uppercase;font-weight:700" id="demoStatus">ASSEMBLING...</div>
             </div>
             <div class="demo-vid-foot">
               <div>
-                <div style="font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:1px" id="demoTitle">—</div>
-                <div style="font-size:9px;color:var(--chalk4);font-weight:400">MINECRAFT BG · ADAM · CAPTIONS ON</div>
+                <div style="font-family:var(--mono);font-size:12px;font-weight:700;margin-bottom:1px" id="demoTitle">—</div>
+                <div style="font-size: 12px;color:var(--chalk4);font-weight:400">MINECRAFT BG · ADAM · CAPTIONS ON</div>
               </div>
               <button class="demo-post-btn" id="demoPostBtn">POST NOW</button>
             </div>
@@ -1270,14 +1481,14 @@ body::after {
       <div class="auth-field"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com" autocomplete="email"/></div>
       <div class="auth-field"><label>Password</label><input type="password" id="su-pass" placeholder="Min. 6 characters" autocomplete="new-password"/></div>
       <button class="auth-submit" onclick="doSignup()">CREATE FREE ACCOUNT →</button>
-      <div class="auth-err" id="su-err"></div>
+      <div class="auth-err" id="su-err" role="alert" aria-live="polite"></div>
       <div class="auth-switch">Already have an account? <a onclick="swTab('li')">Log in</a></div>
     </div>
     <div id="f-li" style="display:none">
       <div class="auth-field"><label>Email</label><input type="email" id="li-email" placeholder="you@example.com" autocomplete="email"/></div>
       <div class="auth-field"><label>Password</label><input type="password" id="li-pass" placeholder="Your password" autocomplete="current-password"/></div>
       <button class="auth-submit" onclick="doLogin()">LOG IN TO STORYFORGE →</button>
-      <div class="auth-err" id="li-err"></div>
+      <div class="auth-err" id="li-err" role="alert" aria-live="polite"></div>
       <div class="auth-switch">No account? <a onclick="swTab('su')">Sign up free</a></div>
     </div>
   </div>
@@ -1292,7 +1503,7 @@ body::after {
     <div class="a-logo">STORY<em>FORGE</em></div>
     <div class="a-nav-r">
       <div class="live-badge"><span class="sys-dot" style="width:5px;height:5px"></span>LIVE</div>
-      <button class="logout-btn" onclick="doLogout()" title="Log out">⏏</button>
+      <button class="logout-btn" onclick="doLogout()" aria-label="Log out" title="Log out"><span aria-hidden="true">⏏</span></button>
     </div>
   </div>
 
@@ -1347,15 +1558,15 @@ body::after {
       <div class="f-label">Niche</div>
       <div class="tier-tag free">— FREE</div>
       <div class="n-grid" style="margin-bottom:9px">
-        <div class="n-btn sel" onclick="pickNiche(this,'Motivation')"><span class="ei">✨</span>Motivation</div>
-        <div class="n-btn" onclick="pickNiche(this,'History')"><span class="ei">🌍</span>History</div>
-        <div class="n-btn" onclick="pickNiche(this,'Psychology')"><span class="ei">🧠</span>Psychology</div>
+        <div class="n-btn sel" onclick="pickNiche(this,'Motivation')"><span class="ico ico-bolt" aria-hidden="true"></span>Motivation</div>
+        <div class="n-btn" onclick="pickNiche(this,'History')"><span class="ico ico-history" aria-hidden="true"></span>History</div>
+        <div class="n-btn" onclick="pickNiche(this,'Psychology')"><span class="ico ico-psyche" aria-hidden="true"></span>Psychology</div>
       </div>
       <div class="tier-tag pro">— PRO 🔒</div>
       <div class="n-grid">
-        <div class="n-btn locked" onclick="showModal()"><span class="ei">😨</span>True Crime</div>
-        <div class="n-btn locked" onclick="showModal()"><span class="ei">💰</span>Finance</div>
-        <div class="n-btn locked" onclick="showModal()"><span class="ei">👻</span>Horror</div>
+        <div class="n-btn locked" onclick="showModal()"><span class="ico ico-crime" aria-hidden="true"></span>True Crime</div>
+        <div class="n-btn locked" onclick="showModal()"><span class="ico ico-finance" aria-hidden="true"></span>Finance</div>
+        <div class="n-btn locked" onclick="showModal()"><span class="ico ico-horror" aria-hidden="true"></span>Horror</div>
       </div>
     </div>
 
@@ -1409,11 +1620,11 @@ body::after {
       </div>
       <div class="step-card lk" id="sc2">
         <div class="st-hd"><div class="st-n" id="sn2">2</div><div class="st-title">Voiceover</div><div class="st-status" id="ss2"></div></div>
-        <div class="st-body" id="voBody"><div style="font-size:10px;color:var(--chalk4);font-weight:400">Generate script first</div></div>
+        <div class="st-body" id="voBody"><div style="font-size:12px;color:var(--chalk4);font-weight:400">Generate script first</div></div>
       </div>
       <div class="step-card lk" id="sc3">
         <div class="st-hd"><div class="st-n" id="sn3">3</div><div class="st-title">Video Assembly</div><div class="st-status" id="ss3"></div></div>
-        <div class="st-body" id="vidBody"><div style="font-size:10px;color:var(--chalk4);font-weight:400">Voiceover needed first</div></div>
+        <div class="st-body" id="vidBody"><div style="font-size:12px;color:var(--chalk4);font-weight:400">Voiceover needed first</div></div>
       </div>
     </div>
   </div>
@@ -1441,11 +1652,11 @@ body::after {
     <div class="g-card">
       <div class="f-label">Best Performer</div>
       <div style="font-family:var(--mono);font-size:12px;font-weight:700;margin-bottom:4px">"5 Stocks That Made Millionaires"</div>
-      <div style="font-size:10px;color:var(--chalk4);font-weight:400">Finance · 247K views · $143 revenue</div>
+      <div style="font-size:12px;color:var(--chalk4);font-weight:400">Finance · 247K views · $143 revenue</div>
       <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-        <div style="background:var(--void);border:1px solid var(--rim);border-radius:2px;padding:10px;text-align:center"><div style="font-family:var(--display);font-size:1.4rem;letter-spacing:1px">8.4%</div><div style="font-size:8px;color:var(--chalk4);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase">Click Rate</div></div>
-        <div style="background:var(--void);border:1px solid var(--rim);border-radius:2px;padding:10px;text-align:center"><div style="font-family:var(--display);font-size:1.4rem;letter-spacing:1px">73%</div><div style="font-size:8px;color:var(--chalk4);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase">Watch Time</div></div>
-        <div style="background:var(--void);border:1px solid var(--rim);border-radius:2px;padding:10px;text-align:center"><div style="font-family:var(--display);font-size:1.4rem;letter-spacing:1px">12K</div><div style="font-size:8px;color:var(--chalk4);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase">Shares</div></div>
+        <div style="background:var(--void);border:1px solid var(--rim);border-radius:2px;padding:10px;text-align:center"><div style="font-family:var(--display);font-size:1.4rem;letter-spacing:1px">8.4%</div><div style="font-size: 12px;color:var(--chalk4);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase">Click Rate</div></div>
+        <div style="background:var(--void);border:1px solid var(--rim);border-radius:2px;padding:10px;text-align:center"><div style="font-family:var(--display);font-size:1.4rem;letter-spacing:1px">73%</div><div style="font-size: 12px;color:var(--chalk4);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase">Watch Time</div></div>
+        <div style="background:var(--void);border:1px solid var(--rim);border-radius:2px;padding:10px;text-align:center"><div style="font-family:var(--display);font-size:1.4rem;letter-spacing:1px">12K</div><div style="font-size: 12px;color:var(--chalk4);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase">Shares</div></div>
       </div>
     </div>
   </div>
@@ -1455,13 +1666,13 @@ body::after {
     <div class="pg-head"><div class="pg-eye">Configuration</div><div class="pg-title">SETTINGS</div></div>
     <div class="g-card">
       <div class="f-label">ElevenLabs API Key</div>
-      <div style="font-size:10px;color:var(--chalk4);margin-bottom:9px;font-weight:400">Get your key at <span style="color:var(--green)">elevenlabs.io</span> → Profile → API Keys</div>
-      <div class="set-inp-wrap"><input type="password" id="elK" placeholder="sk_..." oninput="saveElKey(this.value)"/><button class="set-eye" onclick="toggleEye()" id="eyeBtn">👁</button></div>
+      <div style="font-size:12px;color:var(--chalk4);margin-bottom:9px;font-weight:400">Get your key at <span style="color:var(--green)">elevenlabs.io</span> → Profile → API Keys</div>
+      <div class="set-inp-wrap"><input type="password" id="elK" placeholder="sk_..." oninput="saveElKey(this.value)"/><button class="set-eye" onclick="toggleEye()" id="eyeBtn" aria-label="Show or hide API key"><span aria-hidden="true">👁</span></button></div>
       <div class="key-ok" id="keyOk"></div>
     </div>
     <div class="g-card">
       <div class="f-label">Anthropic API Key</div>
-      <div style="font-size:10px;color:var(--chalk4);margin-bottom:9px;font-weight:400">For script generation. Get at <span style="color:var(--green)">console.anthropic.com</span></div>
+      <div style="font-size:12px;color:var(--chalk4);margin-bottom:9px;font-weight:400">For script generation. Get at <span style="color:var(--green)">console.anthropic.com</span></div>
       <div class="set-inp-wrap" style="margin-bottom:0"><input type="password" id="anK" placeholder="sk-ant-..." oninput="saveAnKey(this.value)" style="padding-right:14px"/></div>
     </div>
     <div class="g-card">
@@ -1471,12 +1682,12 @@ body::after {
     <div class="g-card">
       <div class="f-label">Plan & Account</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-        <div><div style="font-family:var(--mono);font-size:12px;font-weight:700">Free Plan</div><div style="font-size:9px;color:var(--chalk4);margin-top:2px;font-weight:400">3 videos/mo · 3 niches · No auto-post</div></div>
+        <div><div style="font-family:var(--mono);font-size:12px;font-weight:700">Free Plan</div><div style="font-size: 12px;color:var(--chalk4);margin-top:2px;font-weight:400">3 videos/mo · 3 niches · No auto-post</div></div>
         <button onclick="showModal()" style="padding:8px 13px;background:var(--green);color:var(--void);border:none;border-radius:2px;font-family:var(--display);font-size:13px;letter-spacing:2px;cursor:pointer;">UPGRADE</button>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><div style="font-size:12px;font-weight:700" id="settEmail">—</div><div style="font-size:9px;color:var(--chalk4);margin-top:2px;font-weight:400">Member since today</div></div>
-        <button onclick="doLogout()" style="padding:8px 13px;background:var(--surface);color:var(--chalk3);border:1px solid var(--rim2);border-radius:2px;font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">LOG OUT</button>
+        <div><div style="font-size:12px;font-weight:700" id="settEmail">—</div><div style="font-size: 12px;color:var(--chalk4);margin-top:2px;font-weight:400">Member since today</div></div>
+        <button onclick="doLogout()" style="padding:8px 13px;background:var(--surface);color:var(--chalk3);border:1px solid var(--rim2);border-radius:2px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">LOG OUT</button>
       </div>
     </div>
   </div>
@@ -1500,11 +1711,11 @@ body::after {
     <div class="modal-title">UNLOCK PRO</div>
     <div class="modal-sub">True Crime, Finance, and Horror are the highest-converting niches. Upgrade for all 6 niches plus 30 videos/mo.</div>
     <div class="modal-feats">
-      <div class="modal-feat"><span class="ic">😨</span>True Crime — avg 3× more views</div>
-      <div class="modal-feat"><span class="ic">💰</span>Finance — highest affiliate earnings</div>
-      <div class="modal-feat"><span class="ic">👻</span>Horror — most shared niche on TikTok</div>
-      <div class="modal-feat"><span class="ic">⚡</span>30 videos/month (vs 3 free)</div>
-      <div class="modal-feat"><span class="ic">▶</span>Auto-upload to YouTube & TikTok</div>
+      <div class="modal-feat"><span class="ic" aria-hidden="true"><span class="ico ico-crime"></span></span>True Crime — avg 3× more views</div>
+      <div class="modal-feat"><span class="ic" aria-hidden="true"><span class="ico ico-finance"></span></span>Finance — highest affiliate earnings</div>
+      <div class="modal-feat"><span class="ic" aria-hidden="true"><span class="ico ico-horror"></span></span>Horror — most shared niche on TikTok</div>
+      <div class="modal-feat"><span class="ic" aria-hidden="true"><span class="ico ico-bolt"></span></span>30 videos/month (vs 3 free)</div>
+      <div class="modal-feat"><span class="ic" aria-hidden="true">▶</span>Auto-upload to YouTube & TikTok</div>
     </div>
     <button class="modal-cta">UPGRADE TO PRO — $29/MO</button>
     <button class="modal-skip" onclick="closeMod()">MAYBE LATER</button>
@@ -1668,8 +1879,8 @@ async function genScript() {
   sa.style.display='none'; s1.className='step-card as'; st1.textContent='WRITING...';
   document.getElementById('sc2').className='step-card lk';
   document.getElementById('sc3').className='step-card lk';
-  document.getElementById('voBody').innerHTML='<div style="font-size:10px;color:var(--chalk4);font-weight:400">Generate script first</div>';
-  document.getElementById('vidBody').innerHTML='<div style="font-size:10px;color:var(--chalk4);font-weight:400">Voiceover needed first</div>';
+  document.getElementById('voBody').innerHTML='<div style="font-size:12px;color:var(--chalk4);font-weight:400">Generate script first</div>';
+  document.getElementById('vidBody').innerHTML='<div style="font-size:12px;color:var(--chalk4);font-weight:400">Voiceover needed first</div>';
 
   const anK=localStorage.getItem('an_key');
   try {
@@ -1683,7 +1894,7 @@ async function genScript() {
         so.textContent=curScript;clearInterval(iv);sa.style.display='grid';
         s1.className='step-card dn';st1.textContent='✓ DONE';
         document.getElementById('sc2').className='step-card';
-        document.getElementById('voBody').innerHTML='<div style="font-size:10px;color:var(--chalk3);font-weight:400;margin-bottom:7px">READY — GENERATE VOICEOVER BELOW</div>';
+        document.getElementById('voBody').innerHTML='<div style="font-size:12px;color:var(--chalk3);font-weight:400;margin-bottom:7px">READY — GENERATE VOICEOVER BELOW</div>';
         if(sess){const u=JSON.parse(localStorage.getItem('sf_u')||'{}');if(u[sess.e]){u[sess.e].vids=(u[sess.e].vids||0)+1;localStorage.setItem('sf_u',JSON.stringify(u));}refreshUsage(sess.e);}
       }
     },8);
@@ -1712,10 +1923,10 @@ async function startVO() {
 function showVOP(vb,s2,st2,url,real) {
   const dur=Math.floor(curScript.split(' ').length/2.5);
   const bars=Array.from({length:34},(_,i)=>`<div class="vo-bar" style="height:${Math.round(Math.random()*20+4)}px;animation-delay:${(i*.05).toFixed(2)}s;"></div>`).join('');
-  vb.innerHTML=`<div class="vo-pl"><div class="vo-info"><div class="vo-icon">🎙</div><div class="vo-meta"><div class="vo-name">${curVoice} — ${real?'ELEVENLABS':'DEVICE TTS'}</div><div class="vo-det">~${dur}s · ${curScript.split(' ').length} words</div></div></div><div class="vo-wave">${bars}</div><div class="vo-ctrls">${url?`<button class="act-btn" onclick="playAu('${url}')">▶ PLAY</button><a href="${url}" download="voice.mp3" style="text-decoration:none;flex:1"><button class="act-btn" style="width:100%">⬇ MP3</button></a>`:'<button class="act-btn" style="opacity:0.35" disabled>▶</button><button class="act-btn" style="opacity:0.35;flex:1" disabled>⬇</button>'}<button class="act-btn p" onclick="startVidAsm()" style="flex:1">🎬 ASSEMBLE →</button></div>${!real?'<div style="font-size:9px;color:var(--chalk4);margin-top:7px;font-weight:400">ADD ELEVENLABS KEY IN SETTINGS FOR REAL VOICE</div>':''}</div>`;
+  vb.innerHTML=`<div class="vo-pl"><div class="vo-info"><div class="vo-icon">🎙</div><div class="vo-meta"><div class="vo-name">${curVoice} — ${real?'ELEVENLABS':'DEVICE TTS'}</div><div class="vo-det">~${dur}s · ${curScript.split(' ').length} words</div></div></div><div class="vo-wave">${bars}</div><div class="vo-ctrls">${url?`<button class="act-btn" onclick="playAu('${url}')">▶ PLAY</button><a href="${url}" download="voice.mp3" style="text-decoration:none;flex:1"><button class="act-btn" style="width:100%">⬇ MP3</button></a>`:'<button class="act-btn" style="opacity:0.35" disabled>▶</button><button class="act-btn" style="opacity:0.35;flex:1" disabled>⬇</button>'}<button class="act-btn p" onclick="startVidAsm()" style="flex:1">🎬 ASSEMBLE →</button></div>${!real?'<div style="font-size: 12px;color:var(--chalk4);margin-top:7px;font-weight:400">ADD ELEVENLABS KEY IN SETTINGS FOR REAL VOICE</div>':''}</div>`;
   s2.className='step-card dn'; st2.textContent='✓ READY';
   document.getElementById('sc3').className='step-card';
-  document.getElementById('vidBody').innerHTML='<div style="font-size:10px;color:var(--chalk3);font-weight:400">READY — TAP ASSEMBLE ABOVE</div>';
+  document.getElementById('vidBody').innerHTML='<div style="font-size:12px;color:var(--chalk3);font-weight:400">READY — TAP ASSEMBLE ABOVE</div>';
 }
 
 let curAu=null;
@@ -1734,14 +1945,14 @@ function startVidAsm() {
     if(l)l.textContent=steps[si]||'✓ DONE!'; if(b)b.style.width=pct+'%';
     if(si>=steps.length-1){clearInterval(iv);setTimeout(()=>{
       s3.className='step-card dn'; st3.textContent='✓ READY';
-      vb.innerHTML=`<div style="background:var(--void);border:1px solid var(--rim2);border-radius:2px;overflow:hidden;"><div style="height:80px;background:linear-gradient(135deg,#050708,#0c100e,#050708);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;"><div style="font-size:28px">🎬</div><div style="font-size:9px;color:var(--green);font-weight:700;letter-spacing:2px">VIDEO READY</div></div><div style="padding:10px 12px;"><div style="font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:8px">${bg} · ${curVoice} · Captions ON</div><div class="vo-ctrls"><button class="act-btn" onclick="alert('Downloads in production')">⬇ DOWNLOAD</button><button class="act-btn p" onclick="addQ()" style="flex:1">📤 ADD TO QUEUE →</button></div></div></div>`;
+      vb.innerHTML=`<div style="background:var(--void);border:1px solid var(--rim2);border-radius:2px;overflow:hidden;"><div style="height:80px;background:linear-gradient(135deg,#050708,#0c100e,#050708);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;"><div style="font-size:28px">🎬</div><div style="font-size: 12px;color:var(--green);font-weight:700;letter-spacing:2px">VIDEO READY</div></div><div style="padding:10px 12px;"><div style="font-family:var(--mono);font-size:12px;font-weight:700;margin-bottom:8px">${bg} · ${curVoice} · Captions ON</div><div class="vo-ctrls"><button class="act-btn" onclick="alert('Downloads in production')">⬇ DOWNLOAD</button><button class="act-btn p" onclick="addQ()" style="flex:1">📤 ADD TO QUEUE →</button></div></div></div>`;
     },600);}
   },900);
 }
 
 function addQ() {
   const t=document.createElement('div');
-  t.style.cssText='position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--green);color:var(--void);padding:9px 18px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;z-index:999;white-space:nowrap;letter-spacing:0.5px;';
+  t.style.cssText='position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--green);color:var(--void);padding:9px 18px;border-radius:2px;font-family:var(--mono);font-size:12px;font-weight:700;z-index:999;white-space:nowrap;letter-spacing:0.5px;';
   t.textContent='✓ ADDED TO QUEUE';document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
 }
 
