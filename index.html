@@ -3,2008 +3,1820 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>StoryForge — AI TikTok Factory</title>
+<title>StoryForge — AI Video Factory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap');
+/* ── DESIGN SYSTEM ──────────────────────────────────
+   Aesthetic: Retro-futurist broadcast terminal
+   Tone: NASA mission control meets underground radio
+   Unforgettable: Machine feels already running on load
+   Typography: Bebas Neue + Space Mono + Playfair italic
+   Colour: Radar green on near-black, single accent
+───────────────────────────────────────────────────── */
 
 :root {
-  --bg: #08090c;
-  --surface: #0f1117;
-  --surface2: #151820;
-  --border: #1e2130;
-  --border2: #252a3a;
-  --accent: #e8ff47;
-  --accent2: #ff4d6d;
-  --accent3: #4dffc3;
-  --text: #e8eaf2;
-  --text2: #a0a5bc;
-  --text3: #6b7194;
+  --void:    #06080a;
+  --deep:    #0a0d0f;
+  --panel:   #0e1214;
+  --surface: #141a1d;
+  --rim:     #1e2830;
+  --rim2:    #253240;
+  --green:   #00ff88;
+  --green2:  #00cc6a;
+  --green3:  #004d29;
+  --green4:  rgba(0,255,136,0.08);
+  --amber:   #ffaa00;
+  --red:     #ff3344;
+  --chalk:   #e8f0ee;
+  --chalk2:  #8aa09c;
+  --chalk3:  #3d5550;
+  --chalk4:  #1e3330;
+  --mono:    'Space Mono', monospace;
+  --display: 'Bebas Neue', sans-serif;
+  --serif:   'Playfair Display', serif;
 }
 
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Instrument Sans', sans-serif;
+  background: var(--void);
+  color: var(--chalk);
+  font-family: var(--mono);
   min-height: 100vh;
-  padding-bottom: 80px;
+  overflow-x: hidden;
+  cursor: default;
 }
 
-/* TOP NAV (mobile header) */
-.topnav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 18px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* mesh grid background */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,255,136,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,136,0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 80%);
 }
 
-.logo-mark {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.3rem;
-  color: var(--text);
-}
-.logo-mark span { color: var(--accent); }
-
-.topnav-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* scanlines */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px
+  );
 }
 
-.status-pill {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--accent3);
-  background: rgba(77,255,195,0.08);
-  padding: 5px 10px;
-  border-radius: 20px;
-  border: 1px solid rgba(77,255,195,0.2);
+/* ── SCREEN ROUTING ── */
+.screen { display: none; position: relative; z-index: 2; }
+.screen.active { display: block; }
+
+/* ═══════════════════════════════════
+   LANDING
+═══════════════════════════════════ */
+
+/* NAV */
+.l-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  height: 52px;
+  background: rgba(6,8,10,0.9);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--rim);
 }
 
-.dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--accent3);
-  animation: pulse 2s infinite;
+.l-logo {
+  font-family: var(--display);
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  color: var(--chalk);
+  line-height: 1;
 }
+.l-logo em { font-style: normal; color: var(--green); text-shadow: 0 0 20px rgba(0,255,136,0.5); }
 
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.l-nav-links { display: flex; align-items: center; gap: 4px; }
 
-/* BOTTOM TAB BAR */
-.tabbar {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  display: flex;
-  z-index: 100;
-  padding-bottom: env(safe-area-inset-bottom, 0);
+.l-link {
+  padding: 6px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--chalk3);
+  background: none; border: none; cursor: pointer;
+  font-family: var(--mono); transition: color 0.15s;
 }
+.l-link:hover { color: var(--chalk2); }
 
-.tab {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 4px;
-  font-size: 10px;
-  color: var(--text3);
-  cursor: pointer;
-  gap: 4px;
-  border: none;
+.l-btn {
+  padding: 8px 16px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-family: var(--mono); cursor: pointer;
+  transition: all 0.15s; border-radius: 2px;
+}
+.l-btn-ghost {
   background: none;
-  font-family: 'Instrument Sans', sans-serif;
-  transition: color 0.15s;
-  -webkit-tap-highlight-color: transparent;
+  border: 1px solid var(--rim2); color: var(--chalk2);
 }
+.l-btn-ghost:hover { border-color: var(--chalk3); color: var(--chalk); }
+.l-btn-primary {
+  background: var(--green); border: none; color: var(--void);
+  box-shadow: 0 0 20px rgba(0,255,136,0.3);
+  font-weight: 700;
+}
+.l-btn-primary:hover { background: #1affa0; box-shadow: 0 0 30px rgba(0,255,136,0.5); }
+.l-btn-primary:active { transform: scale(0.98); }
 
-.tab.active { color: var(--accent); }
-.tab-icon { font-size: 20px; }
-
-/* PAGES */
-.page { display: none; padding: 16px; }
-.page.active { display: block; }
-
-/* STATS */
-.stats-row {
+/* HERO */
+.l-hero {
+  min-height: calc(100vh - 52px);
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
+  grid-template-columns: 1fr;
   position: relative;
   overflow: hidden;
 }
 
-.stat-card::before {
+/* green atmospheric glow behind hero */
+.l-hero::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--accent-color, var(--accent));
+  top: -100px; left: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(0,255,136,0.06) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.stat-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text3);
+.l-hero-left {
+  padding: 48px 24px 40px;
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+
+/* boot-sequence entrance */
+.boot-1 { animation: bootIn 0.5s ease both; animation-delay: 0.1s; }
+.boot-2 { animation: bootIn 0.5s ease both; animation-delay: 0.25s; }
+.boot-3 { animation: bootIn 0.5s ease both; animation-delay: 0.4s; }
+.boot-4 { animation: bootIn 0.5s ease both; animation-delay: 0.55s; }
+.boot-5 { animation: bootIn 0.5s ease both; animation-delay: 0.7s; }
+.boot-6 { animation: bootIn 0.5s ease both; animation-delay: 0.85s; }
+
+@keyframes bootIn {
+  from { opacity: 0; transform: translateY(8px); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0);   filter: blur(0); }
+}
+
+.sys-status {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--green);
+  margin-bottom: 20px;
+}
+.sys-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green), 0 0 20px rgba(0,255,136,0.4);
+  animation: sigscan 1.4s ease-in-out infinite;
+}
+@keyframes sigscan { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.hero-h1 {
+  font-family: var(--display);
+  font-size: clamp(3.8rem, 11vw, 5.5rem);
+  line-height: 0.92;
+  letter-spacing: 2px;
+  color: var(--chalk);
+  margin-bottom: 8px;
+}
+.hero-h1 .italic-word {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--green);
+  text-shadow: 0 0 40px rgba(0,255,136,0.4);
+  letter-spacing: -1px;
+  font-size: 0.9em;
+}
+
+.hero-sub {
+  font-size: 11px; color: var(--chalk3);
+  line-height: 1.9; margin-bottom: 28px;
+  max-width: 340px; font-weight: 400;
+}
+.hero-sub strong { color: var(--chalk2); font-weight: 700; }
+
+.hero-cta {
+  width: 100%;
+  padding: 16px 24px;
+  background: var(--green);
+  border: none; border-radius: 2px;
+  color: var(--void);
+  font-family: var(--display);
+  font-size: 1.3rem; letter-spacing: 3px;
+  cursor: pointer;
+  box-shadow: 0 0 40px rgba(0,255,136,0.25), 0 4px 0 var(--green2);
+  transition: all 0.15s;
+  animation: ctabreath 3s ease-in-out infinite;
+  margin-bottom: 12px;
+}
+@keyframes ctabreath {
+  0%,100% { box-shadow: 0 0 30px rgba(0,255,136,0.2), 0 4px 0 var(--green2); }
+  50%      { box-shadow: 0 0 60px rgba(0,255,136,0.5), 0 4px 0 var(--green2); }
+}
+.hero-cta:active { transform: translateY(3px); box-shadow: 0 0 20px rgba(0,255,136,0.15), 0 1px 0 var(--green2); }
+
+.hero-fine {
+  font-size: 9px; color: var(--chalk4);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+/* PROOF ROW */
+.proof-row {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--rim);
+  border-bottom: 1px solid var(--rim);
+  margin: 0 0 32px;
+}
+.proof-cell {
+  padding: 16px 12px; text-align: center;
+  border-right: 1px solid var(--rim);
+}
+.proof-cell:last-child { border-right: none; }
+.proof-num {
+  font-family: var(--display);
+  font-size: 2.2rem; letter-spacing: 2px;
+  line-height: 1; margin-bottom: 4px;
+}
+.proof-label {
+  font-size: 8px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--chalk4);
+}
+
+/* LIVE DEMO CARD */
+.demo-wrap { padding: 0 16px 32px; }
+.demo-outer {
+  border: 1px solid var(--rim2);
+  border-radius: 4px; overflow: hidden;
+  background: var(--deep);
+  /* CRT screen vignette */
+  box-shadow:
+    inset 0 0 60px rgba(0,0,0,0.5),
+    0 0 1px var(--green3),
+    0 8px 40px rgba(0,0,0,0.6);
+}
+.demo-titlebar {
+  background: var(--panel);
+  padding: 8px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--rim);
+}
+.demo-titlebar-left {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--chalk3);
+}
+.demo-replay-btn {
+  font-size: 8px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--green);
+  background: none; border: 1px solid var(--green3);
+  padding: 3px 8px; border-radius: 2px; cursor: pointer;
+  display: none; font-family: var(--mono);
+}
+
+.demo-row {
+  display: flex; align-items: flex-start;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--rim);
+  gap: 12px;
+}
+.demo-row:last-child { border-bottom: none; }
+.demo-step-num {
+  font-family: var(--display);
+  font-size: 1.6rem; letter-spacing: 1px;
+  color: var(--chalk4); line-height: 1;
+  flex-shrink: 0; width: 28px;
+  transition: color 0.3s;
+}
+.demo-step-num.lit { color: var(--green); text-shadow: 0 0 12px rgba(0,255,136,0.5); }
+.demo-step-body { flex: 1; }
+.demo-step-label {
+  font-size: 8px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--chalk4);
   margin-bottom: 8px;
 }
 
-.stat-value {
-  font-family: 'DM Serif Display', serif;
-  font-size: 2.4rem;
-  color: var(--text);
-  line-height: 1;
-}
-
-.stat-change {
-  font-size: 10px;
-  color: var(--accent3);
-  margin-top: 5px;
-  font-family: 'DM Mono', monospace;
-}
-
-/* SECTION HEADER */
-.section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.section-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.1rem;
-}
-
-.badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  padding: 3px 8px;
-  border-radius: 20px;
-  background: rgba(232,255,71,0.1);
-  color: var(--accent);
-  border: 1px solid rgba(232,255,71,0.2);
-  letter-spacing: 1px;
-}
-
-/* GENERATE PAGE */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 18px;
-  margin-bottom: 14px;
-}
-
-.form-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text2);
-  margin-bottom: 10px;
-  display: block;
-}
-
-.niche-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.niche-btn {
-  padding: 12px 8px;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: center;
-  color: var(--text2);
-  font-size: 11px;
-  font-family: 'Instrument Sans', sans-serif;
-  transition: all 0.15s;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-
-.niche-btn .emoji { font-size: 20px; display: block; margin-bottom: 5px; }
-.niche-btn.selected { border-color: var(--accent); background: rgba(232,255,71,0.07); color: var(--accent); }
-
-.select-input {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  padding: 12px 14px;
-  color: var(--text);
-  font-family: 'Instrument Sans', sans-serif;
-  font-size: 14px;
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-  margin-bottom: 0;
-}
-
-.select-wrap {
-  position: relative;
-}
-
-.select-wrap::after {
-  content: '▾';
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text2);
-  pointer-events: none;
-  font-size: 14px;
-}
-
-.toggle-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 13px 0;
-  border-bottom: 1px solid var(--border);
-}
-.toggle-row:last-child { border-bottom: none; }
-
-.toggle-info { font-size: 13px; color: var(--text); line-height: 1.3; }
-.toggle-info small { display: block; font-size: 11px; color: var(--text3); margin-top: 2px; }
-
-.toggle {
-  width: 44px; height: 26px;
-  background: var(--border2);
-  border-radius: 13px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.2s;
-  border: none;
-  flex-shrink: 0;
-  margin-left: 12px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.toggle.on { background: var(--accent); }
-
-.toggle::after {
-  content: '';
-  position: absolute;
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: white;
-  top: 3px; left: 3px;
-  transition: transform 0.2s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-}
-
-.toggle.on::after { transform: translateX(18px); background: #000; }
-
-.generate-btn {
-  width: 100%;
-  padding: 16px;
-  background: var(--accent);
-  color: #000;
-  font-family: 'Instrument Sans', sans-serif;
-  font-weight: 700;
-  font-size: 15px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.generate-btn:active { opacity: 0.8; }
-.generate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-/* OUTPUT */
-.output-box {
-  display: none;
-  margin-top: 14px;
-}
-.output-box.visible { display: block; }
-
-.script-area {
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 16px;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  color: var(--text2);
-  line-height: 1.8;
-  max-height: 300px;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
-  margin-bottom: 12px;
-}
-
-.loading-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--accent);
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-}
-
-.spinner {
-  width: 14px; height: 14px;
-  border: 2px solid rgba(232,255,71,0.2);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  flex-shrink: 0;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.action-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-}
-
-.action-btn {
-  padding: 12px 8px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-family: 'Instrument Sans', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid var(--border2);
-  background: var(--surface2);
-  color: var(--text);
-  text-align: center;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.action-btn.primary {
-  background: var(--accent);
-  color: #000;
-  border-color: var(--accent);
-}
-
-/* QUEUE PAGE */
-.queue-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-.q-thumb {
-  width: 52px; height: 52px;
-  border-radius: 10px;
-  background: var(--surface2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px;
-  flex-shrink: 0;
-}
-
-.q-info { flex: 1; min-width: 0; }
-.q-title { font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 4px; }
-.q-meta { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
-
-.q-status {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
+/* niche chips */
+.niche-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.nc {
   padding: 4px 10px;
-  border-radius: 5px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
+  background: var(--surface); border: 1px solid var(--rim);
+  border-radius: 2px; font-size: 10px; color: var(--chalk3);
+  transition: all 0.35s; font-family: var(--mono);
+}
+.nc.lit {
+  background: rgba(0,255,136,0.08);
+  border-color: var(--green);
+  color: var(--green);
+  box-shadow: 0 0 10px rgba(0,255,136,0.15), inset 0 0 8px rgba(0,255,136,0.05);
+}
+
+/* typewriter script */
+.demo-script-out {
+  font-size: 10px; color: var(--chalk2);
+  line-height: 1.8; min-height: 40px;
+  font-weight: 400;
+}
+.cursor {
   display: inline-block;
-  margin-top: 6px;
+  width: 7px; height: 12px;
+  background: var(--green);
+  animation: blink 0.7s ease infinite;
+  vertical-align: middle;
+  margin-left: 2px;
+  box-shadow: 0 0 6px var(--green);
 }
-.s-live { background: rgba(77,255,195,0.1); color: var(--accent3); }
-.s-queued { background: rgba(232,255,71,0.08); color: var(--accent); }
-.s-building { background: rgba(255,77,109,0.1); color: var(--accent2); }
+.cursor.hidden { display: none; }
+@keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
 
-/* CHANNELS PAGE */
-.channel-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px;
+/* voice viz */
+.demo-voice-row {
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0.18; transition: opacity 0.6s;
+}
+.demo-voice-row.lit { opacity: 1; }
+.v-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-.ch-avatar {
-  width: 44px; height: 44px;
-  border-radius: 50%;
+  border: 1px solid var(--rim2);
   display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
+  font-family: var(--display); font-size: 14px; letter-spacing: 1px;
+  color: var(--green); flex-shrink: 0;
+}
+.v-wave {
+  flex: 1; height: 24px;
+  background: var(--void);
+  border: 1px solid var(--rim);
+  border-radius: 2px;
+  display: flex; align-items: center; gap: 2px; padding: 0 8px; overflow: hidden;
+}
+.v-bar {
+  width: 2px; border-radius: 1px;
+  background: var(--green); opacity: 0.5;
   flex-shrink: 0;
+  animation: vbar 1s ease-in-out infinite;
+  animation-play-state: paused;
 }
+.v-bar.playing { animation-play-state: running; opacity: 0.8; }
+@keyframes vbar { 0%,100%{transform:scaleY(0.1)} 50%{transform:scaleY(1)} }
 
-.ch-name { font-size: 14px; font-weight: 600; }
-.ch-sub { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
-
-.ch-stats { margin-left: auto; text-align: right; flex-shrink: 0; }
-.ch-views { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
-.ch-trend { font-size: 10px; color: var(--accent3); font-family: 'DM Mono', monospace; }
-
-.add-channel {
-  width: 100%;
-  padding: 14px;
-  border: 2px dashed var(--border2);
-  border-radius: 10px;
-  background: none;
-  color: var(--text3);
-  font-family: 'Instrument Sans', sans-serif;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 4px;
-  -webkit-tap-highlight-color: transparent;
+/* video ready card */
+.demo-vid-card {
+  border: 1px solid var(--rim); border-radius: 3px;
+  overflow: hidden; opacity: 0.15; transition: opacity 0.7s;
 }
-
-/* ANALYTICS PAGE */
-.revenue-big {
-  text-align: center;
-  padding: 28px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  margin-bottom: 14px;
+.demo-vid-card.lit { opacity: 1; }
+.demo-vid-screen {
+  height: 72px;
+  background: linear-gradient(135deg, #06090a, #0d1410, #06090a);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 4px;
+  position: relative; overflow: hidden;
 }
-
-.revenue-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--text3);
-  text-transform: uppercase;
-  margin-bottom: 10px;
+.demo-vid-screen::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(0,255,136,0.04) 0%, transparent 70%);
 }
-
-.revenue-num {
-  font-family: 'DM Serif Display', serif;
-  font-size: 3.5rem;
-  color: var(--accent);
-  line-height: 1;
+.demo-vid-foot {
+  padding: 9px 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  background: var(--panel);
 }
-
-.revenue-sub {
-  font-size: 12px;
-  color: var(--text3);
-  margin-top: 8px;
-  font-family: 'DM Mono', monospace;
+.demo-post-btn {
+  padding: 5px 11px;
+  background: var(--green); border: none; border-radius: 2px;
+  color: var(--void); font-family: var(--display);
+  font-size: 12px; letter-spacing: 2px;
+  cursor: pointer; flex-shrink: 0;
+  opacity: 0; transition: opacity 0.5s;
 }
+.demo-post-btn.lit { opacity: 1; }
 
-.income-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 13px 0;
-  border-bottom: 1px solid var(--border);
+/* HOW IT WORKS */
+.l-section { padding: 32px 16px; border-top: 1px solid var(--rim); }
+.l-eyebrow {
+  font-size: 8px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--green);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
 }
-.income-row:last-child { border-bottom: none; }
-
-.income-source { font-size: 13px; color: var(--text2); }
-.income-amount { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--text); }
-
-.progress-bar {
-  height: 4px;
-  background: var(--border2);
-  border-radius: 2px;
-  margin-top: 6px;
-  overflow: hidden;
+.l-eyebrow::before {
+  content: '';
+  display: inline-block; width: 20px; height: 1px; background: var(--green);
 }
-.progress-fill {
-  height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-}
-
-.niche-btn.locked {
-  opacity: 0.45;
-  position: relative;
-  cursor: pointer;
-}
-
-.niche-btn.locked::after {
-  content: '🔒';
-  position: absolute;
-  top: 5px; right: 6px;
-  font-size: 10px;
-}
-
-/* UPGRADE MODAL */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  z-index: 200;
-  align-items: flex-end;
-  justify-content: center;
-}
-.modal-overlay.show { display: flex; }
-
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 18px 18px 0 0;
-  padding: 28px 22px 40px;
-  width: 100%;
-  max-width: 520px;
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.modal-handle {
-  width: 40px; height: 4px;
-  background: var(--border2);
-  border-radius: 2px;
-  margin: 0 auto 20px;
-}
-
-.modal-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.4rem;
-  margin-bottom: 6px;
-}
-
-.modal-sub {
-  font-size: 13px;
-  color: var(--text2);
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-.modal-features {
+.l-h2 {
+  font-family: var(--display);
+  font-size: 2.8rem; letter-spacing: 2px; line-height: 0.95;
   margin-bottom: 22px;
 }
+.l-h2 em { font-style: normal; color: var(--green); }
 
-.modal-feature {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--text2);
-  padding: 7px 0;
-  border-bottom: 1px solid var(--border);
-}
-.modal-feature:last-child { border-bottom: none; }
-.modal-feature span { color: var(--accent); font-size: 16px; }
-
-.modal-upgrade-btn {
-  width: 100%;
-  padding: 15px;
-  background: var(--accent);
-  color: #000;
-  font-family: 'Instrument Sans', sans-serif;
-  font-weight: 700;
-  font-size: 15px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-bottom: 10px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* FORM SPACING */
-.form-row { margin-bottom: 16px; }
-
-/* PIPELINE STEPS */
-.step-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 12px;
+.hiw-items { display: flex; flex-direction: column; gap: 1px; }
+.hiw-item {
+  display: grid; grid-template-columns: 48px 1fr;
+  gap: 0;
+  background: var(--panel);
+  border: 1px solid var(--rim);
+  border-radius: 2px; overflow: hidden;
+  margin-bottom: 2px;
   transition: border-color 0.2s;
 }
-
-.step-card.active-step { border-color: var(--accent); }
-.step-card.done-step { border-color: var(--accent3); }
-.step-card.locked-step { opacity: 0.45; pointer-events: none; }
-
-.step-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.step-num {
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.step-card.active-step .step-num { background: var(--accent); color: #000; border-color: var(--accent); }
-.step-card.done-step .step-num { background: var(--accent3); color: #000; border-color: var(--accent3); }
-
-.step-title {
-  font-weight: 700;
-  font-size: 14px;
-  flex: 1;
-}
-
-.step-status {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--text3);
-}
-
-.step-body { padding: 4px 0; }
-
-/* VOICEOVER PLAYER */
-.vo-player {
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 14px;
-  margin-top: 8px;
-}
-
-.vo-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.vo-icon {
-  font-size: 24px;
-}
-
-.vo-meta { flex: 1; }
-.vo-name { font-size: 13px; font-weight: 600; }
-.vo-details { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
-
-.vo-waveform {
-  height: 40px;
-  background: var(--bg);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 0 12px;
-  margin-bottom: 12px;
-  overflow: hidden;
-}
-
-.vo-bar {
-  width: 3px;
-  border-radius: 2px;
-  background: var(--accent);
-  opacity: 0.6;
-  animation: vowave 1s ease-in-out infinite;
-}
-
-@keyframes vowave {
-  0%, 100% { transform: scaleY(0.3); }
-  50% { transform: scaleY(1); }
-}
-
-.vo-controls {
-  display: flex;
-  gap: 8px;
-}
-
-/* Settings input focus */
-input:focus {
-  border-color: var(--accent) !important;
-  outline: none;
-}
-
-/* VOICE CARDS */
-.voice-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.voice-card {
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 12px;
-  cursor: pointer;
-  transition: all 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.voice-card.selected {
-  border-color: var(--accent);
-  background: rgba(232,255,71,0.06);
-}
-
-.voice-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  pointer-events: none;
-}
-
-.voice-avatar {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.voice-avatar.male { background: rgba(77,180,255,0.15); color: #4db4ff; }
-.voice-avatar.female { background: rgba(255,77,180,0.15); color: #ff4db4; }
-.voice-avatar.asmr { background: rgba(77,255,195,0.15); color: var(--accent3); font-size: 20px; }
-
-.voice-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.voice-default {
-  font-family: 'DM Mono', monospace;
-  font-size: 8px;
-  letter-spacing: 1px;
-  background: var(--accent);
-  color: #000;
-  padding: 2px 5px;
-  border-radius: 3px;
-  font-weight: 700;
-}
-
-.voice-desc {
-  font-size: 10px;
-  color: var(--text3);
-  margin-top: 2px;
-  font-family: 'DM Mono', monospace;
-}
-
-.preview-btn {
-  width: 100%;
-  padding: 7px;
+.hiw-item:hover { border-color: var(--rim2); }
+.hiw-n {
   background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 6px;
-  color: var(--text2);
-  font-size: 11px;
-  font-family: 'Instrument Sans', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display); font-size: 2rem;
+  letter-spacing: 1px; color: var(--chalk4);
+  border-right: 1px solid var(--rim);
+}
+.hiw-text { padding: 14px 16px; }
+.hiw-title {
+  font-size: 12px; font-weight: 700; color: var(--chalk);
+  margin-bottom: 3px; letter-spacing: 0.3px;
+}
+.hiw-sub { font-size: 10px; color: var(--chalk3); line-height: 1.7; font-weight: 400; }
+
+/* PRICING */
+.pricing-stack { display: flex; flex-direction: column; gap: 8px; }
+.plan {
+  background: var(--panel); border: 1px solid var(--rim);
+  border-radius: 3px; padding: 20px; position: relative; overflow: hidden;
+}
+.plan.featured {
+  border-color: var(--green);
+  box-shadow: 0 0 0 1px var(--green3), inset 0 0 40px rgba(0,255,136,0.03);
+}
+.plan.featured::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--green2), var(--green), var(--green2));
+  box-shadow: 0 0 8px var(--green);
+}
+.plan-tier {
+  font-size: 8px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--chalk4); margin-bottom: 10px;
+}
+.plan-tier.pro { color: var(--green); }
+.plan-price {
+  font-family: var(--display);
+  font-size: 3.5rem; letter-spacing: 1px; line-height: 1;
+  margin-bottom: 4px;
+}
+.plan-price sup { font-size: 1.5rem; vertical-align: top; margin-top: 8px; display: inline-block; }
+.plan-price sub {
+  font-family: var(--mono); font-size: 0.9rem;
+  color: var(--chalk3); font-weight: 400;
+  vertical-align: baseline;
+}
+.plan-desc { font-size: 10px; color: var(--chalk3); margin-bottom: 16px; line-height: 1.6; font-weight: 400; }
+.plan-feats { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
+.plan-feat {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 10px; color: var(--chalk2); font-weight: 400;
+}
+.ck { color: var(--green); font-size: 11px; }
+.cx { color: var(--chalk4); font-size: 11px; }
+.plan-btn {
+  width: 100%; padding: 13px;
+  font-family: var(--display); font-size: 1.1rem;
+  letter-spacing: 3px; border: none; border-radius: 2px; cursor: pointer;
   transition: all 0.15s;
 }
+.plan-btn.free { background: var(--surface); color: var(--chalk2); border: 1px solid var(--rim2); }
+.plan-btn.pro-b { background: var(--green); color: var(--void); box-shadow: 0 0 24px rgba(0,255,136,0.3); }
+.plan-btn:active { transform: scale(0.98); }
 
-.voice-card.selected .preview-btn {
-  border-color: rgba(232,255,71,0.3);
-  color: var(--accent);
+/* FAQ */
+.faq-list { display: flex; flex-direction: column; }
+.faq-row { border-bottom: 1px solid var(--rim); }
+.faq-q {
+  width: 100%; text-align: left; padding: 14px 0;
+  background: none; border: none; color: var(--chalk);
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+.faq-arr { color: var(--chalk4); font-size: 10px; transition: transform 0.2s, color 0.2s; flex-shrink: 0; }
+.faq-row.open .faq-arr { transform: rotate(180deg); color: var(--green); }
+.faq-a { font-size: 10px; color: var(--chalk3); line-height: 1.8; padding-bottom: 14px; display: none; font-weight: 400; }
+.faq-row.open .faq-a { display: block; }
+
+/* FOOTER */
+.l-footer {
+  padding: 20px 24px; border-top: 1px solid var(--rim);
+  text-align: center;
+}
+.l-footer-logo {
+  font-family: var(--display); font-size: 1.3rem; letter-spacing: 2px; margin-bottom: 4px;
+}
+.l-footer-logo em { font-style: normal; color: var(--green); }
+.l-footer-sub { font-size: 9px; color: var(--chalk4); letter-spacing: 1px; text-transform: uppercase; }
+
+
+/* ═══════════════════════════════════
+   AUTH
+═══════════════════════════════════ */
+#screen-auth {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px 20px;
+  background: var(--void);
+}
+#screen-auth::before {
+  content: '';
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0,255,136,0.05) 0%, transparent 60%);
 }
 
-.preview-btn:active { opacity: 0.7; }
-
-/* PREVIEW PLAYER */
-.preview-player {
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-top: 4px;
+.auth-logo {
+  font-family: var(--display); font-size: 2rem;
+  letter-spacing: 3px; text-align: center; margin-bottom: 2px;
+}
+.auth-logo em { font-style: normal; color: var(--green); text-shadow: 0 0 20px rgba(0,255,136,0.4); }
+.auth-tagline {
+  font-size: 8px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--chalk4);
+  text-align: center; margin-bottom: 28px;
 }
 
-.preview-playing {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.auth-card {
+  width: 100%; max-width: 380px;
+  background: var(--deep); border: 1px solid var(--rim);
+  border-radius: 4px; padding: 24px 22px;
 }
 
-.preview-wave {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  flex-shrink: 0;
+.auth-tabs {
+  display: grid; grid-template-columns: 1fr 1fr;
+  background: var(--void); border: 1px solid var(--rim);
+  border-radius: 2px; padding: 3px; margin-bottom: 22px; gap: 3px;
 }
+.auth-tab {
+  padding: 8px;
+  font-family: var(--display); font-size: 1rem; letter-spacing: 2px;
+  color: var(--chalk4); background: none; border: none;
+  cursor: pointer; border-radius: 1px; transition: all 0.2s; text-align: center;
+}
+.auth-tab.on { background: var(--surface); color: var(--chalk); }
 
-.preview-wave span {
+.auth-field { margin-bottom: 14px; }
+.auth-field label {
   display: block;
-  width: 3px;
-  border-radius: 2px;
-  background: var(--accent);
-  animation: wave 0.8s ease-in-out infinite;
+  font-size: 8px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--chalk3); margin-bottom: 7px;
+}
+.auth-field input {
+  width: 100%; background: var(--void);
+  border: 1px solid var(--rim2); border-radius: 2px;
+  padding: 11px 14px; color: var(--chalk);
+  font-family: var(--mono); font-size: 12px; outline: none;
+  transition: border-color 0.2s;
+}
+.auth-field input::placeholder { color: var(--chalk4); }
+.auth-field input:focus { border-color: var(--green); box-shadow: 0 0 0 1px var(--green3); }
+
+.auth-submit {
+  width: 100%; padding: 13px; margin-top: 4px;
+  background: var(--green); border: none; border-radius: 2px;
+  color: var(--void); font-family: var(--display);
+  font-size: 1.1rem; letter-spacing: 3px; cursor: pointer;
+  box-shadow: 0 0 24px rgba(0,255,136,0.25);
+  transition: all 0.15s;
+}
+.auth-submit:active { transform: scale(0.98); }
+.auth-err { font-size: 10px; color: var(--red); text-align: center; margin-top: 10px; min-height: 15px; }
+.auth-switch { text-align: center; font-size: 10px; color: var(--chalk4); margin-top: 14px; }
+.auth-switch a { color: var(--green); cursor: pointer; }
+.auth-back {
+  font-size: 10px; color: var(--chalk4); cursor: pointer;
+  margin-top: 16px; text-align: center; letter-spacing: 0.5px;
+}
+.auth-back:hover { color: var(--chalk2); }
+
+
+/* ═══════════════════════════════════
+   APP
+═══════════════════════════════════ */
+
+/* constrain on desktop */
+#screen-app {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--void);
+  box-shadow: -1px 0 0 var(--rim), 1px 0 0 var(--rim);
+  padding-bottom: 80px;
 }
 
-.preview-wave span:nth-child(1) { height: 8px; animation-delay: 0s; }
-.preview-wave span:nth-child(2) { height: 16px; animation-delay: 0.1s; }
-.preview-wave span:nth-child(3) { height: 22px; animation-delay: 0.2s; }
-.preview-wave span:nth-child(4) { height: 16px; animation-delay: 0.3s; }
-.preview-wave span:nth-child(5) { height: 8px; animation-delay: 0.4s; }
+/* app nav */
+.a-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; height: 50px;
+  background: rgba(6,8,10,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--rim);
+}
+.a-logo {
+  font-family: var(--display); font-size: 1.4rem; letter-spacing: 2px;
+}
+.a-logo em { font-style: normal; color: var(--green); text-shadow: 0 0 12px rgba(0,255,136,0.4); }
+.a-nav-r { display: flex; align-items: center; gap: 10px; }
+.live-badge {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--green); background: rgba(0,255,136,0.06);
+  border: 1px solid var(--green3); padding: 4px 9px; border-radius: 2px;
+}
+.logout-btn { background: none; border: none; color: var(--chalk4); font-size: 15px; cursor: pointer; }
 
-@keyframes wave {
-  0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
-  50% { transform: scaleY(1); opacity: 1; }
+/* tab bar */
+.tabbar {
+  position: fixed; bottom: 0; z-index: 100;
+  width: 100%; max-width: 520px;
+  left: 50%; transform: translateX(-50%);
+  background: rgba(6,8,10,0.97);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--rim);
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom,0);
+}
+.tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 9px 4px 8px; gap: 3px;
+  font-size: 8px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--chalk4);
+  background: none; border: none; cursor: pointer;
+  font-family: var(--mono); transition: color 0.2s; position: relative;
+}
+.tab.on { color: var(--green); }
+.tab.on::before {
+  content: '';
+  position: absolute; top: 0; left: 15%; right: 15%;
+  height: 2px; background: var(--green);
+  box-shadow: 0 0 8px rgba(0,255,136,0.7);
+}
+.t-icon { font-size: 18px; }
+
+/* pages */
+.page { display: none; padding: 18px 16px; }
+.page.on { display: block; animation: pgIn 0.2s ease; }
+@keyframes pgIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+
+/* page header */
+.pg-head { margin-bottom: 20px; }
+.pg-eye {
+  font-size: 8px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--chalk4); margin-bottom: 5px;
+}
+.pg-title {
+  font-family: var(--display); font-size: 2.2rem;
+  letter-spacing: 2px; line-height: 1;
+}
+.pg-title em { font-style: normal; color: var(--green); }
+
+/* usage bar */
+.use-bar {
+  background: var(--panel); border: 1px solid var(--rim);
+  border-radius: 3px; padding: 13px 15px; margin-bottom: 16px;
+}
+.use-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.use-label { font-size: 9px; font-weight: 700; color: var(--chalk2); letter-spacing: 0.5px; }
+.use-count { font-size: 9px; color: var(--chalk4); }
+.use-track { height: 2px; background: var(--rim); border-radius: 1px; overflow: hidden; }
+.use-fill {
+  height: 100%; background: var(--green); border-radius: 1px;
+  transition: width 0.5s; box-shadow: 0 0 6px rgba(0,255,136,0.6);
+}
+.use-cta { margin-top: 9px; display: flex; justify-content: space-between; align-items: center; }
+.use-cta-text { font-size: 9px; color: var(--chalk4); font-weight: 400; }
+.use-up-btn { font-size: 9px; font-weight: 700; color: var(--green); background: none; border: none; cursor: pointer; font-family: var(--mono); letter-spacing: 0.5px; }
+
+/* quick actions */
+.q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+.q-btn {
+  padding: 15px 14px; border-radius: 3px;
+  cursor: pointer; text-align: left; transition: all 0.15s;
+  font-family: var(--mono);
+}
+.q-btn:active { transform: scale(0.97); }
+.q-btn.prime {
+  background: var(--green); border: none;
+  box-shadow: 0 0 20px rgba(0,255,136,0.2);
+}
+.q-btn.sec { background: var(--panel); border: 1px solid var(--rim); }
+.q-btn-head {
+  font-family: var(--display); font-size: 1.2rem; letter-spacing: 1px;
+  color: var(--void); margin-bottom: 2px;
+}
+.q-btn.sec .q-btn-head { color: var(--chalk); }
+.q-btn-sub { font-size: 9px; color: rgba(0,0,0,0.5); }
+.q-btn.sec .q-btn-sub { color: var(--chalk4); }
+
+/* stat tiles */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 22px; }
+.stat-tile {
+  background: var(--panel); border: 1px solid var(--rim);
+  border-radius: 3px; padding: 14px;
+  position: relative; overflow: hidden;
+}
+.stat-tile::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--tl, var(--rim2));
+  box-shadow: 0 0 6px var(--tl, transparent);
+}
+.stat-label {
+  font-size: 8px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--chalk4); margin-bottom: 8px;
+}
+.stat-val {
+  font-family: var(--display); font-size: 2.4rem;
+  letter-spacing: 1px; line-height: 1; color: var(--chalk);
+}
+.stat-delta { font-size: 9px; color: var(--green); margin-top: 6px; font-weight: 700; }
+
+/* section head */
+.sec-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.sec-title { font-family: var(--display); font-size: 1.2rem; letter-spacing: 2px; }
+.sec-badge {
+  font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  background: rgba(0,255,136,0.08); color: var(--green);
+  border: 1px solid var(--green3); padding: 3px 8px; border-radius: 2px;
 }
 
-.preview-label {
-  flex: 1;
-  font-size: 12px;
-  color: var(--text2);
-  font-family: 'DM Mono', monospace;
+/* video items */
+.v-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px;
+  background: var(--panel); border: 1px solid var(--rim);
+  border-left: 2px solid var(--il, var(--rim));
+  border-radius: 3px; margin-bottom: 7px;
 }
-
-.preview-stop {
-  background: none;
-  border: none;
-  color: var(--text3);
-  font-size: 14px;
-  cursor: pointer;
-  padding: 4px;
-  -webkit-tap-highlight-color: transparent;
+.v-thumb {
+  width: 42px; height: 42px; border-radius: 2px;
+  background: var(--surface); border: 1px solid var(--rim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
 }
+.v-info { flex: 1; min-width: 0; }
+.v-title {
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  margin-bottom: 3px;
+}
+.v-meta { font-size: 9px; color: var(--chalk4); margin-bottom: 7px; font-weight: 400; }
+.v-status {
+  font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 2px; display: inline-block;
+}
+.s-live { background: rgba(0,255,136,0.08); color: var(--green); border: 1px solid var(--green3); }
+.s-q    { background: rgba(255,170,0,0.08); color: var(--amber); border: 1px solid rgba(255,170,0,0.2); }
+.s-bld  { background: rgba(255,51,68,0.08); color: var(--red); border: 1px solid rgba(255,51,68,0.18); }
 
+/* gen page */
+.g-card {
+  background: var(--panel); border: 1px solid var(--rim);
+  border-radius: 3px; padding: 16px; margin-bottom: 10px;
+}
+.f-label {
+  font-size: 8px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--chalk4); margin-bottom: 10px; display: block;
+}
+.tier-tag {
+  font-size: 8px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.tier-tag.free { color: var(--green); }
+.tier-tag.pro  { color: var(--amber); }
+
+.n-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; }
+.n-btn {
+  padding: 12px 6px; background: var(--surface); border: 1px solid var(--rim);
+  border-radius: 2px; text-align: center; cursor: pointer;
+  font-size: 10px; font-weight: 700; color: var(--chalk4);
+  font-family: var(--mono); letter-spacing: 0.3px;
+  transition: all 0.15s; user-select: none;
+}
+.n-btn .ei { font-size: 18px; display: block; margin-bottom: 5px; }
+.n-btn:active { transform: scale(0.96); }
+.n-btn.sel { border-color: var(--green); background: rgba(0,255,136,0.06); color: var(--green); box-shadow: inset 0 0 0 1px rgba(0,255,136,0.08); }
+.n-btn.locked { opacity: 0.35; position: relative; }
+.n-btn.locked::after { content:'🔒'; position:absolute; top:4px; right:5px; font-size:8px; }
+
+.sel-wrap { position: relative; }
+.sel-wrap::after { content:'▾'; position:absolute; right:11px; top:50%; transform:translateY(-50%); color:var(--chalk4); pointer-events:none; font-size:11px; }
+.sel-inp {
+  width: 100%; background: var(--void); border: 1px solid var(--rim2);
+  border-radius: 2px; padding: 10px 12px; color: var(--chalk);
+  font-family: var(--mono); font-size: 11px; outline: none;
+  -webkit-appearance: none; transition: border-color 0.2s;
+}
+.sel-inp:focus { border-color: var(--green); }
+
+/* voice cards */
+.vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 7px; }
+.vc {
+  background: var(--surface); border: 1px solid var(--rim);
+  border-radius: 2px; padding: 10px; cursor: pointer; transition: all 0.15s;
+}
+.vc:active { transform: scale(0.97); }
+.vc.sel { border-color: var(--green); background: rgba(0,255,136,0.04); }
+.vc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; pointer-events: none; }
+.vc-av {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display); font-size: 13px; letter-spacing: 1px;
+  flex-shrink: 0; border: 1px solid var(--rim2);
+}
+.va-m { background: rgba(100,150,255,0.1); color: #64a0ff; }
+.va-f { background: rgba(255,100,160,0.1); color: #ff64a0; }
+.va-x { background: rgba(0,255,136,0.07); color: var(--green); }
+.vc-name { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--chalk); display: flex; align-items: center; gap: 5px; }
+.vc-def { font-size: 7px; letter-spacing: 1px; background: var(--green); color: var(--void); padding: 1px 4px; border-radius: 1px; font-weight: 700; }
+.vc-desc { font-size: 9px; color: var(--chalk4); margin-top: 1px; font-weight: 400; }
+.vc-prev {
+  width: 100%; padding: 5px; background: var(--void); border: 1px solid var(--rim);
+  border-radius: 1px; color: var(--chalk4); font-size: 9px; font-weight: 700;
+  cursor: pointer; font-family: var(--mono); letter-spacing: 0.5px; transition: all 0.15s;
+}
+.vc.sel .vc-prev { border-color: var(--green3); color: var(--green); }
+
+.prev-player {
+  background: var(--void); border: 1px solid var(--rim);
+  border-radius: 2px; padding: 9px 12px; margin-top: 5px;
+}
+.prev-playing { display: flex; align-items: center; gap: 9px; }
+.prev-wave { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.prev-wave span { display: block; width: 2px; border-radius: 1px; background: var(--green); animation: pw .8s ease-in-out infinite; }
+.prev-wave span:nth-child(1){height:5px;animation-delay:0s} .prev-wave span:nth-child(2){height:11px;animation-delay:.1s} .prev-wave span:nth-child(3){height:18px;animation-delay:.2s} .prev-wave span:nth-child(4){height:11px;animation-delay:.3s} .prev-wave span:nth-child(5){height:5px;animation-delay:.4s}
+@keyframes pw { 0%,100%{transform:scaleY(0.3);opacity:0.4} 50%{transform:scaleY(1);opacity:1} }
+.prev-lbl { flex: 1; font-size: 9px; color: var(--chalk3); }
+.prev-stop { background:none; border:none; color:var(--chalk4); cursor:pointer; padding:3px; font-size:12px; }
+
+/* toggles */
+.tog-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid var(--rim);
+}
+.tog-row:last-child { border-bottom: none; }
+.tog-info { font-size: 11px; color: var(--chalk); }
+.tog-info small { display: block; font-size: 9px; color: var(--chalk4); margin-top: 2px; font-weight: 400; }
+.tog {
+  width: 42px; height: 24px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--rim2);
+  position: relative; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s; flex-shrink: 0; margin-left: 12px;
+}
+.tog.on { background: var(--green); border-color: var(--green); box-shadow: 0 0 10px rgba(0,255,136,0.3); }
+.tog::after {
+  content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--chalk); top: 2px; left: 2px;
+  transition: transform 0.2s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+.tog.on::after { transform: translateX(18px); background: var(--void); }
+
+/* generate button */
+.gen-btn {
+  width: 100%; padding: 15px;
+  background: var(--green); border: none; border-radius: 2px;
+  color: var(--void); font-family: var(--display);
+  font-size: 1.3rem; letter-spacing: 3px; cursor: pointer;
+  box-shadow: 0 0 30px rgba(0,255,136,0.2), 0 3px 0 var(--green2);
+  transition: all 0.15s;
+}
+.gen-btn:active { transform: translateY(2px); box-shadow: 0 0 15px rgba(0,255,136,0.1), 0 1px 0 var(--green2); }
+.gen-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* output / pipeline */
+.out-box { display: none; margin-top: 12px; }
+.out-box.vis { display: block; }
+.script-out {
+  background: var(--void); border: 1px solid var(--rim2); border-radius: 2px;
+  padding: 13px; font-size: 10px; color: var(--chalk3); line-height: 1.9;
+  max-height: 260px; overflow-y: auto; white-space: pre-wrap; margin-bottom: 9px; font-weight: 400;
+}
+.ld-row { display: flex; align-items: center; gap: 7px; color: var(--green); font-size: 10px; }
+.spin { width: 11px; height: 11px; border: 2px solid rgba(0,255,136,0.2); border-top-color: var(--green); border-radius: 50%; animation: spin 0.75s linear infinite; flex-shrink: 0; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.act-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+.act-btn {
+  padding: 10px 6px; border-radius: 2px; font-size: 10px; font-weight: 700;
+  font-family: var(--mono); cursor: pointer; border: 1px solid var(--rim2);
+  background: var(--surface); color: var(--chalk); text-align: center;
+  transition: all 0.12s; letter-spacing: 0.3px;
+}
+.act-btn:active { transform: scale(0.97); }
+.act-btn.p { background: var(--green); color: var(--void); border-color: var(--green); box-shadow: 0 0 12px rgba(0,255,136,0.2); }
+
+/* step cards */
+.step-card {
+  background: var(--panel); border: 1px solid var(--rim);
+  border-radius: 3px; padding: 14px; margin-bottom: 9px; transition: border-color 0.2s;
+}
+.step-card.as { border-color: var(--green); box-shadow: 0 0 0 1px var(--green3); }
+.step-card.dn { border-color: var(--green2); }
+.step-card.lk { opacity: 0.35; pointer-events: none; }
+.st-hd { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
+.st-n {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--rim2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--display); font-size: 11px; letter-spacing: 1px; flex-shrink: 0;
+}
+.step-card.as .st-n { background: var(--green); color: var(--void); border-color: var(--green); box-shadow: 0 0 8px rgba(0,255,136,0.4); }
+.step-card.dn .st-n { background: var(--green2); color: var(--void); border-color: var(--green2); }
+.st-title { font-family: var(--mono); font-size: 12px; font-weight: 700; flex: 1; }
+.st-status { font-size: 9px; color: var(--chalk4); }
+.st-body { padding: 2px 0; }
+
+/* vo player */
+.vo-pl { background: var(--void); border: 1px solid var(--rim2); border-radius: 2px; padding: 11px; margin-top: 8px; }
+.vo-info { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+.vo-icon { font-size: 20px; }
+.vo-meta { flex: 1; }
+.vo-name { font-family: var(--mono); font-size: 11px; font-weight: 700; }
+.vo-det { font-size: 9px; color: var(--chalk4); margin-top: 1px; font-weight: 400; }
+.vo-wave { height: 32px; background: var(--deep); border: 1px solid var(--rim); border-radius: 2px; display: flex; align-items: center; gap: 2px; padding: 0 8px; margin-bottom: 9px; overflow: hidden; }
+.vo-bar { width: 2px; border-radius: 1px; background: var(--green); opacity: 0.5; animation: vbar 1.2s ease-in-out infinite; }
+.vo-ctrls { display: flex; gap: 5px; }
+
+/* channels */
+.ch-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--panel); border: 1px solid var(--rim); border-radius: 3px; margin-bottom: 7px; }
+.ch-av { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; border: 1px solid var(--rim2); }
+.ch-name { font-family: var(--mono); font-size: 12px; font-weight: 700; }
+.ch-sub { font-size: 9px; color: var(--chalk4); margin-top: 2px; font-weight: 400; }
+.ch-stats { margin-left: auto; text-align: right; flex-shrink: 0; }
+.ch-views { font-family: var(--display); font-size: 1.2rem; letter-spacing: 1px; }
+.ch-trend { font-size: 9px; color: var(--green); margin-top: 1px; }
+.add-ch { width: 100%; padding: 13px; border: 1px dashed var(--rim2); border-radius: 3px; background: none; color: var(--chalk4); font-family: var(--mono); font-size: 11px; font-weight: 700; cursor: pointer; margin-top: 4px; }
+
+/* revenue */
+.rev-big { text-align: center; padding: 28px 16px 24px; background: var(--panel); border: 1px solid var(--rim); border-radius: 4px; margin-bottom: 12px; position: relative; overflow: hidden; }
+.rev-big::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0,255,136,0.04) 0%, transparent 70%); pointer-events: none; }
+.rev-label { font-size: 8px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--chalk4); margin-bottom: 10px; }
+.rev-num { font-family: var(--display); font-size: 4rem; letter-spacing: 1px; color: var(--green); line-height: 1; text-shadow: 0 0 40px rgba(0,255,136,0.3); }
+.rev-sub { font-size: 9px; color: var(--chalk4); margin-top: 8px; font-weight: 400; }
+.inc-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--rim); }
+.inc-row:last-child { border-bottom: none; }
+.inc-src { font-size: 11px; color: var(--chalk2); font-weight: 400; }
+.inc-amt { font-family: var(--display); font-size: 1.2rem; letter-spacing: 1px; }
+.prog-bar { height: 2px; background: var(--rim); border-radius: 1px; margin-top: 5px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 1px; }
+
+/* settings */
+.set-inp-wrap { position: relative; margin-bottom: 8px; }
+.set-inp-wrap input {
+  width: 100%; background: var(--void); border: 1px solid var(--rim2);
+  border-radius: 2px; padding: 10px 36px 10px 12px;
+  color: var(--chalk); font-family: var(--mono); font-size: 11px; outline: none;
+  transition: border-color 0.2s;
+}
+.set-inp-wrap input:focus { border-color: var(--green); }
+.set-eye { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--chalk4); font-size: 13px; cursor: pointer; }
+.key-ok { font-size: 9px; margin-top: 5px; min-height: 14px; color: var(--chalk4); font-weight: 400; }
+
+/* upgrade modal */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(4px); z-index: 200; align-items: flex-end; justify-content: center; }
+.modal-bg.on { display: flex; }
+.modal {
+  background: var(--deep); border: 1px solid var(--rim2);
+  border-radius: 4px 4px 0 0;
+  padding: 24px 20px 40px; width: 100%; max-width: 520px;
+  animation: mslide 0.3s cubic-bezier(.34,1.1,.64,1);
+  position: relative; overflow: hidden;
+}
+.modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--green); box-shadow: 0 0 10px var(--green); }
+@keyframes mslide { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
+.modal-handle { width: 32px; height: 3px; background: var(--rim2); border-radius: 2px; margin: 0 auto 20px; }
+.modal-title { font-family: var(--display); font-size: 2rem; letter-spacing: 2px; margin-bottom: 8px; }
+.modal-sub { font-size: 10px; color: var(--chalk3); margin-bottom: 20px; line-height: 1.7; font-weight: 400; }
+.modal-feats { margin-bottom: 20px; }
+.modal-feat { display: flex; align-items: center; gap: 10px; font-size: 10px; color: var(--chalk2); padding: 8px 0; border-bottom: 1px solid var(--rim); font-weight: 400; }
+.modal-feat:last-child { border-bottom: none; }
+.modal-feat .ic { font-size: 15px; width: 22px; text-align: center; }
+.modal-cta { width: 100%; padding: 14px; background: var(--green); border: none; border-radius: 2px; color: var(--void); font-family: var(--display); font-size: 1.2rem; letter-spacing: 3px; cursor: pointer; margin-bottom: 10px; box-shadow: 0 0 24px rgba(0,255,136,0.3); }
+.modal-skip { display: block; width: 100%; text-align: center; padding: 9px; background: none; border: none; color: var(--chalk4); font-family: var(--mono); font-size: 9px; cursor: pointer; letter-spacing: 1px; }
+
+/* also constrain auth screen on desktop */
+@media (min-width: 560px) {
+  #screen-auth { background: var(--void); }
+  #screen-landing .l-hero { min-height: auto; }
+}
 </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
-<div class="topnav">
-  <div class="logo-mark">Story<span>Forge</span></div>
-  <div class="topnav-right">
-    <div class="status-pill"><div class="dot"></div>Live</div>
-  </div>
-</div>
+<!-- ═══════════ LANDING ═══════════ -->
+<div class="screen active" id="screen-landing">
 
-<!-- PAGES -->
+  <nav class="l-nav">
+    <div class="l-logo">STORY<em>FORGE</em></div>
+    <div class="l-nav-links">
+      <button class="l-link" onclick="sscroll('how')">How It Works</button>
+      <button class="l-link" onclick="sscroll('pricing')">Pricing</button>
+      <button class="l-link" onclick="sscroll('faq')">FAQ</button>
+      <button class="l-btn l-btn-ghost" onclick="showAuth('login')">Log In</button>
+      <button class="l-btn l-btn-primary" onclick="showAuth('signup')">Get Started</button>
+    </div>
+  </nav>
 
-<!-- HOME / STATS -->
-<div class="page active" id="page-home">
-  <div style="margin-bottom:14px; margin-top:4px;">
-    <div style="font-family:'DM Serif Display',serif; font-size:1.5rem; line-height:1.2;">
-      Your Factory<br><span style="color:var(--accent)">is Running ⚡</span>
-    </div>
-    <div style="font-size:12px; color:var(--text3); margin-top:6px; font-family:'DM Mono',monospace;">Next auto-post in 4h 23m</div>
-  </div>
+  <section class="l-hero">
+    <div class="l-hero-left">
 
-  <div class="stats-row">
-    <div class="stat-card" style="--accent-color:var(--accent)">
-      <div class="stat-label">Videos / Mo</div>
-      <div class="stat-value">24</div>
-      <div class="stat-change">↑ 8 more</div>
-    </div>
-    <div class="stat-card" style="--accent-color:var(--accent3)">
-      <div class="stat-label">Total Views</div>
-      <div class="stat-value">1.4M</div>
-      <div class="stat-change">↑ 34% wk</div>
-    </div>
-    <div class="stat-card" style="--accent-color:var(--accent2)">
-      <div class="stat-label">Revenue</div>
-      <div class="stat-value">$847</div>
-      <div class="stat-change">↑ $210 mo</div>
-    </div>
-    <div class="stat-card" style="--accent-color:#a78bfa">
-      <div class="stat-label">Auto-Posted</div>
-      <div class="stat-value">18</div>
-      <div class="stat-change">6 pending</div>
-    </div>
-  </div>
+      <div class="sys-status boot-1">
+        <span class="sys-dot"></span>
+        ALL SYSTEMS OPERATIONAL
+      </div>
 
-  <div class="section-head">
-    <div class="section-title">Recent Videos</div>
-    <div class="badge">4 QUEUED</div>
-  </div>
+      <h1 class="hero-h1 boot-2">
+        MAKE<br>
+        <span class="italic-word">viral</span><br>
+        VIDEOS<br>
+        WHILE<br>
+        YOU SLEEP.
+      </h1>
 
-  <div class="queue-item">
-    <div class="q-thumb">😨</div>
-    <div class="q-info">
-      <div class="q-title">The Murder That Shocked a Town</div>
-      <div class="q-meta">True Crime · 60s · Posts 9AM</div>
-      <div class="q-status s-queued">Queued</div>
-    </div>
-  </div>
-  <div class="queue-item">
-    <div class="q-thumb">💰</div>
-    <div class="q-info">
-      <div class="q-title">5 Stocks That Made Millionaires</div>
-      <div class="q-meta">Finance · 45s · YouTube</div>
-      <div class="q-status s-live">Live ✓</div>
-    </div>
-  </div>
-  <div class="queue-item">
-    <div class="q-thumb">👻</div>
-    <div class="q-info">
-      <div class="q-title">The Hotel Room Nobody Checks</div>
-      <div class="q-meta">Horror · 60s · Building...</div>
-      <div class="q-status s-building">Building</div>
-    </div>
-  </div>
-</div>
+      <p class="hero-sub boot-3">
+        <strong>StoryForge</strong> writes the script, clones the voice,
+        assembles the video, and posts it to TikTok &amp; YouTube —
+        <strong>automatically, every single day.</strong>
+      </p>
 
-<!-- GENERATE -->
-<div class="page" id="page-generate">
-  <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:16px; margin-top:4px;">
-    Generate Video
+      <button class="hero-cta boot-4" onclick="showAuth('signup')">
+        START FOR FREE →
+      </button>
+      <div class="hero-fine boot-5">
+        3 FREE VIDEOS · NO CREDIT CARD · 60 SECONDS TO SET UP
+      </div>
+
+    </div>
+  </section>
+
+  <div class="proof-row boot-6">
+    <div class="proof-cell">
+      <div class="proof-num" style="color:var(--green)">2.4M</div>
+      <div class="proof-label">Videos Made</div>
+    </div>
+    <div class="proof-cell">
+      <div class="proof-num" style="color:var(--amber)">18K</div>
+      <div class="proof-label">Creators</div>
+    </div>
+    <div class="proof-cell">
+      <div class="proof-num" style="color:var(--chalk2)">$1.2M</div>
+      <div class="proof-label">Earned</div>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="form-row">
-      <label class="form-label">Pick Your Niche</label>
-      <div style="font-size:10px; color:var(--accent3); font-family:'DM Mono',monospace; margin-bottom:8px; letter-spacing:1px;">FREE</div>
-      <div class="niche-grid" style="margin-bottom:10px">
-        <div class="niche-btn selected" onclick="selectNiche(this,'Motivation')">
-          <span class="emoji">✨</span>Motivation
+  <!-- LIVE DEMO -->
+  <div class="demo-wrap">
+    <div class="l-eyebrow" style="padding:0 0 10px">Watch the factory run live</div>
+    <div class="demo-outer">
+      <div class="demo-titlebar">
+        <div class="demo-titlebar-left">
+          <span class="sys-dot" style="width:6px;height:6px"></span>
+          LIVE DEMO — FACTORY ACTIVE
         </div>
-        <div class="niche-btn" onclick="selectNiche(this,'History')">
-          <span class="emoji">🌍</span>History
-        </div>
-        <div class="niche-btn" onclick="selectNiche(this,'Psychology')">
-          <span class="emoji">🧠</span>Psychology
+        <button class="demo-replay-btn" id="demoReplay" onclick="runDemo()">↺ REPLAY</button>
+      </div>
+
+      <div class="demo-row">
+        <div class="demo-step-num" id="dsn0">01</div>
+        <div class="demo-step-body">
+          <div class="demo-step-label">Select niche</div>
+          <div class="niche-chips">
+            <div class="nc" id="dn0">😨 True Crime</div>
+            <div class="nc" id="dn1">💰 Finance</div>
+            <div class="nc" id="dn2">🧠 Psychology</div>
+            <div class="nc" id="dn3">👻 Horror</div>
+            <div class="nc" id="dn4">🌍 History</div>
+          </div>
         </div>
       </div>
-      <div style="font-size:10px; color:var(--accent2); font-family:'DM Mono',monospace; margin-bottom:8px; letter-spacing:1px;">PRO 🔒</div>
-      <div class="niche-grid">
-        <div class="niche-btn locked" onclick="showUpgrade()">
-          <span class="emoji">😨</span>True Crime
-        </div>
-        <div class="niche-btn locked" onclick="showUpgrade()">
-          <span class="emoji">💰</span>Finance
-        </div>
-        <div class="niche-btn locked" onclick="showUpgrade()">
-          <span class="emoji">👻</span>Horror
+
+      <div class="demo-row">
+        <div class="demo-step-num" id="dsn1">02</div>
+        <div class="demo-step-body">
+          <div class="demo-step-label">AI writes script</div>
+          <div class="demo-script-out" id="demoScript"></div>
+          <span class="cursor hidden" id="demoCursor"></span>
         </div>
       </div>
-    </div>
 
-    <div class="form-row">
-      <label class="form-label">Duration</label>
-      <div class="select-wrap">
-        <select class="select-input" id="duration">
-          <option>30 seconds (viral short)</option>
-          <option selected>60 seconds (standard)</option>
-          <option>90 seconds (story format)</option>
-        </select>
+      <div class="demo-row">
+        <div class="demo-step-num" id="dsn2">03</div>
+        <div class="demo-step-body">
+          <div class="demo-step-label">Voiceover generated</div>
+          <div class="demo-voice-row" id="demoVoice">
+            <div class="v-avatar">A</div>
+            <div style="flex:1">
+              <div style="font-size:10px;font-weight:700;margin-bottom:4px">ADAM — ELEVENLABS AI</div>
+              <div class="v-wave" id="vWave">
+                <div class="v-bar" style="height:3px"></div><div class="v-bar" style="height:8px;animation-delay:.07s"></div><div class="v-bar" style="height:15px;animation-delay:.14s"></div><div class="v-bar" style="height:21px;animation-delay:.21s"></div><div class="v-bar" style="height:24px;animation-delay:.28s"></div><div class="v-bar" style="height:21px;animation-delay:.35s"></div><div class="v-bar" style="height:15px;animation-delay:.42s"></div><div class="v-bar" style="height:9px;animation-delay:.49s"></div><div class="v-bar" style="height:4px;animation-delay:.56s"></div><div class="v-bar" style="height:12px;animation-delay:.63s"></div><div class="v-bar" style="height:19px;animation-delay:.7s"></div><div class="v-bar" style="height:23px;animation-delay:.77s"></div><div class="v-bar" style="height:17px;animation-delay:.84s"></div><div class="v-bar" style="height:10px;animation-delay:.91s"></div><div class="v-bar" style="height:5px;animation-delay:.98s"></div><div class="v-bar" style="height:14px;animation-delay:1.05s"></div><div class="v-bar" style="height:20px;animation-delay:1.12s"></div><div class="v-bar" style="height:16px;animation-delay:1.19s"></div><div class="v-bar" style="height:8px;animation-delay:1.26s"></div><div class="v-bar" style="height:4px;animation-delay:1.33s"></div>
+              </div>
+            </div>
+            <div style="color:var(--green);font-size:13px;font-weight:700">✓</div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="form-row">
-      <label class="form-label">AI Voice</label>
-      <div class="voice-grid" id="voiceGrid">
-
-        <div class="voice-card selected" onclick="selectVoice(this,'Adam')" data-voice="Adam">
-          <div class="voice-top">
-            <div class="voice-avatar male">♂</div>
-            <div class="voice-info">
-              <div class="voice-name">Adam <span class="voice-default">DEFAULT</span></div>
-              <div class="voice-desc">Deep · Clear · TikTok-style</div>
+      <div class="demo-row">
+        <div class="demo-step-num" id="dsn3">04</div>
+        <div class="demo-step-body">
+          <div class="demo-step-label">Video ready to post</div>
+          <div class="demo-vid-card" id="demoVid">
+            <div class="demo-vid-screen">
+              <div style="font-size:24px;position:relative;z-index:1" id="demoEmoji">🎬</div>
+              <div style="font-size:9px;color:var(--chalk4);position:relative;z-index:1;letter-spacing:1px;text-transform:uppercase;font-weight:700" id="demoStatus">ASSEMBLING...</div>
+            </div>
+            <div class="demo-vid-foot">
+              <div>
+                <div style="font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:1px" id="demoTitle">—</div>
+                <div style="font-size:9px;color:var(--chalk4);font-weight:400">MINECRAFT BG · ADAM · CAPTIONS ON</div>
+              </div>
+              <button class="demo-post-btn" id="demoPostBtn">POST NOW</button>
             </div>
           </div>
-          <button class="preview-btn" onclick="previewVoice(event,'Adam','Hey, you need to hear this story. Trust me, you won\'t believe what happened.')">▶ Preview</button>
-        </div>
-
-        <div class="voice-card" onclick="selectVoice(this,'Josh')" data-voice="Josh">
-          <div class="voice-top">
-            <div class="voice-avatar male">♂</div>
-            <div class="voice-info">
-              <div class="voice-name">Josh</div>
-              <div class="voice-desc">Young · Energetic · Hype</div>
-            </div>
-          </div>
-          <button class="preview-btn" onclick="previewVoice(event,'Josh','Wait till you hear this. This actually happened and nobody\'s talking about it.')">▶ Preview</button>
-        </div>
-
-        <div class="voice-card" onclick="selectVoice(this,'Arnold')" data-voice="Arnold">
-          <div class="voice-top">
-            <div class="voice-avatar male">♂</div>
-            <div class="voice-info">
-              <div class="voice-name">Arnold</div>
-              <div class="voice-desc">Deep · Authoritative · Bold</div>
-            </div>
-          </div>
-          <button class="preview-btn" onclick="previewVoice(event,'Arnold','What I\'m about to tell you will change the way you see everything.')">▶ Preview</button>
-        </div>
-
-        <div class="voice-card" onclick="selectVoice(this,'Rachel')" data-voice="Rachel">
-          <div class="voice-top">
-            <div class="voice-avatar female">♀</div>
-            <div class="voice-info">
-              <div class="voice-name">Rachel</div>
-              <div class="voice-desc">Female · Neutral · Clear</div>
-            </div>
-          </div>
-          <button class="preview-btn" onclick="previewVoice(event,'Rachel','Nobody ever talks about this. And once you know, you can\'t unknow it.')">▶ Preview</button>
-        </div>
-
-        <div class="voice-card" onclick="selectVoice(this,'Bella')" data-voice="Bella">
-          <div class="voice-top">
-            <div class="voice-avatar female">♀</div>
-            <div class="voice-info">
-              <div class="voice-name">Bella</div>
-              <div class="voice-desc">Female · Warm · Storyteller</div>
-            </div>
-          </div>
-          <button class="preview-btn" onclick="previewVoice(event,'Bella','I need you to stay till the end of this. It gets so much darker.')">▶ Preview</button>
-        </div>
-
-        <div class="voice-card" onclick="selectVoice(this,'Whisper')" data-voice="Whisper">
-          <div class="voice-top">
-            <div class="voice-avatar asmr">~</div>
-            <div class="voice-info">
-              <div class="voice-name">ASMR</div>
-              <div class="voice-desc">Soft · Whisper · Calm</div>
-            </div>
-          </div>
-          <button class="preview-btn" onclick="previewVoice(event,'Whisper','Close your eyes. Let me tell you something nobody else will.')">▶ Preview</button>
-        </div>
-
-      </div>
-
-      <!-- Preview player -->
-      <div class="preview-player" id="previewPlayer" style="display:none">
-        <div class="preview-playing">
-          <div class="preview-wave">
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <div class="preview-label" id="previewLabel">Generating preview...</div>
-          <button class="preview-stop" onclick="stopPreview()">✕</button>
         </div>
       </div>
+
     </div>
+  </div>
 
-    <div class="form-row" style="margin-bottom:0">
-      <label class="form-label">Background</label>
-      <div class="select-wrap">
-        <select class="select-input" id="background">
-          <option selected>Minecraft Parkour</option>
-          <option>Subway Surfers</option>
-          <option>Satisfying Cooking</option>
-          <option>Soap Cutting</option>
-          <option>Nature / Aerial</option>
-          <option>City Timelapse</option>
-        </select>
+  <!-- HOW IT WORKS -->
+  <div class="l-section" id="how">
+    <div class="l-eyebrow">Process</div>
+    <div class="l-h2">FOUR<br>STEPS.<br><em>ZERO</em><br>EFFORT.</div>
+    <div class="hiw-items">
+      <div class="hiw-item">
+        <div class="hiw-n">01</div>
+        <div class="hiw-text">
+          <div class="hiw-title">Pick your niche</div>
+          <div class="hiw-sub">True Crime, Finance, Horror, Psychology, History. Free users get 3. Pro unlocks all 6 plus custom topics.</div>
+        </div>
+      </div>
+      <div class="hiw-item">
+        <div class="hiw-n">02</div>
+        <div class="hiw-text">
+          <div class="hiw-title">Claude AI writes a viral script</div>
+          <div class="hiw-sub">Hook, story arc, tension, CTA — engineered to keep viewers watching to the last second.</div>
+        </div>
+      </div>
+      <div class="hiw-item">
+        <div class="hiw-n">03</div>
+        <div class="hiw-text">
+          <div class="hiw-title">ElevenLabs generates the voice</div>
+          <div class="hiw-sub">6 AI voices indistinguishable from human. Deep, dramatic, ASMR, energetic — you pick.</div>
+        </div>
+      </div>
+      <div class="hiw-item">
+        <div class="hiw-n">04</div>
+        <div class="hiw-text">
+          <div class="hiw-title">Video assembled and auto-posted</div>
+          <div class="hiw-sub">Background footage, burned-in captions, posted to TikTok & YouTube on your schedule.</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <label class="form-label" style="margin-bottom:4px">Options</label>
-    <div class="toggle-row">
-      <div class="toggle-info">Auto-Caption<small>Burn subtitles into video</small></div>
-      <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-    </div>
-    <div class="toggle-row">
-      <div class="toggle-info">Auto-Post to YouTube<small>Uploads when ready</small></div>
-      <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-    </div>
-    <div class="toggle-row">
-      <div class="toggle-info">Affiliate Link in Bio<small>Auto-rotate top offers</small></div>
-      <button class="toggle on" onclick="this.classList.toggle('on')"></button>
-    </div>
-    <div class="toggle-row">
-      <div class="toggle-info">Cross-post to TikTok<small>Manual upload reminder</small></div>
-      <button class="toggle" onclick="this.classList.toggle('on')"></button>
+  <!-- PRICING -->
+  <div class="l-section" id="pricing">
+    <div class="l-eyebrow">Pricing</div>
+    <div class="l-h2">START<br>FREE.<br><em>SCALE</em><br>WHEN READY.</div>
+    <div class="pricing-stack">
+      <div class="plan">
+        <div class="plan-tier">Free Plan</div>
+        <div class="plan-price"><sup>$</sup>0</div>
+        <div class="plan-desc">Try the factory. No card needed.</div>
+        <div class="plan-feats">
+          <div class="plan-feat"><span class="ck">✓</span> 3 videos per month</div>
+          <div class="plan-feat"><span class="ck">✓</span> Motivation, History, Psychology niches</div>
+          <div class="plan-feat"><span class="ck">✓</span> 6 AI voices via ElevenLabs</div>
+          <div class="plan-feat"><span class="ck">✓</span> Script generation with Claude AI</div>
+          <div class="plan-feat"><span class="cx">✗</span> Auto-post to TikTok / YouTube</div>
+          <div class="plan-feat"><span class="cx">✗</span> True Crime, Finance, Horror niches</div>
+        </div>
+        <button class="plan-btn free" onclick="showAuth('signup')">GET STARTED FREE</button>
+      </div>
+      <div class="plan featured">
+        <div class="plan-tier pro">Pro — $29/mo ⚡</div>
+        <div class="plan-price"><sup>$</sup>29<sub>/mo</sub></div>
+        <div class="plan-desc">For creators building passive income machines.</div>
+        <div class="plan-feats">
+          <div class="plan-feat"><span class="ck">✓</span> 30 videos per month</div>
+          <div class="plan-feat"><span class="ck">✓</span> All 6 niches incl. True Crime & Finance</div>
+          <div class="plan-feat"><span class="ck">✓</span> Auto-post to TikTok & YouTube</div>
+          <div class="plan-feat"><span class="ck">✓</span> Affiliate link auto-rotation</div>
+          <div class="plan-feat"><span class="ck">✓</span> Daily schedule — posts while you sleep</div>
+          <div class="plan-feat"><span class="ck">✓</span> Priority voice generation</div>
+        </div>
+        <button class="plan-btn pro-b" onclick="showAuth('signup')">START PRO — 7 DAYS FREE</button>
+      </div>
     </div>
   </div>
 
-  <button class="generate-btn" id="genBtn" onclick="generateScript()">
-    ⚡ Generate Script
-  </button>
-
-  <!-- PIPELINE STEPS -->
-  <div class="output-box" id="outputBox">
-
-    <!-- STEP 1: SCRIPT -->
-    <div class="step-card" id="stepScript">
-      <div class="step-header">
-        <div class="step-num" id="stepNum1">1</div>
-        <div class="step-title">Script</div>
-        <div class="step-status" id="stepStatus1"></div>
-      </div>
-      <div class="script-area" id="scriptArea"></div>
-      <div class="action-row" id="scriptActions" style="display:none">
-        <button class="action-btn" onclick="generateScript()">↺ Redo</button>
-        <button class="action-btn primary" onclick="startVoiceover()">🎙 Generate Voiceover →</button>
-      </div>
+  <!-- FAQ -->
+  <div class="l-section" id="faq">
+    <div class="l-eyebrow">FAQ</div>
+    <div class="l-h2" style="margin-bottom:20px">QUESTIONS.</div>
+    <div class="faq-list">
+      <div class="faq-row"><button class="faq-q" onclick="faqT(this)">Do I need to show my face? <span class="faq-arr">▾</span></button><div class="faq-a">No. StoryForge creates completely faceless videos. The content is built from AI-generated scripts, voiceover, and background footage. You never appear on camera.</div></div>
+      <div class="faq-row"><button class="faq-q" onclick="faqT(this)">Is auto-posting to TikTok legal? <span class="faq-arr">▾</span></button><div class="faq-a">YouTube auto-upload is fully supported via the official YouTube Data API. TikTok posting uses a semi-automated approach — full automation depends on your account type.</div></div>
+      <div class="faq-row"><button class="faq-q" onclick="faqT(this)">How realistic is the AI voice? <span class="faq-arr">▾</span></button><div class="faq-a">We use ElevenLabs, the industry standard for AI voice generation. Most viewers cannot tell the difference from a real human narrator.</div></div>
+      <div class="faq-row"><button class="faq-q" onclick="faqT(this)">Can I actually make money from this? <span class="faq-arr">▾</span></button><div class="faq-a">Yes. Faceless channels earn through YouTube ad revenue, affiliate links, and brand deals. Consistency is the key — StoryForge posts for you daily.</div></div>
+      <div class="faq-row"><button class="faq-q" onclick="faqT(this)">What API keys do I need? <span class="faq-arr">▾</span></button><div class="faq-a">An Anthropic key (script generation) and an ElevenLabs key (voiceover). Both have free tiers. Add them in Settings after signing up.</div></div>
     </div>
-
-    <!-- STEP 2: VOICEOVER -->
-    <div class="step-card locked-step" id="stepVoice">
-      <div class="step-header">
-        <div class="step-num" id="stepNum2">2</div>
-        <div class="step-title">Voiceover</div>
-        <div class="step-status" id="stepStatus2"></div>
-      </div>
-      <div class="step-body" id="voiceBody">
-        <div style="font-size:12px; color:var(--text3); font-family:'DM Mono',monospace;">Generate script first</div>
-      </div>
-    </div>
-
-    <!-- STEP 3: VIDEO -->
-    <div class="step-card locked-step" id="stepVideo">
-      <div class="step-header">
-        <div class="step-num" id="stepNum3">3</div>
-        <div class="step-title">Video Assembly</div>
-        <div class="step-status" id="stepStatus3"></div>
-      </div>
-      <div class="step-body" id="videoBody">
-        <div style="font-size:12px; color:var(--text3); font-family:'DM Mono',monospace;">Voiceover needed first</div>
-      </div>
-    </div>
-
   </div>
+
+  <!-- BOTTOM CTA -->
+  <div style="padding:28px 16px;border-top:1px solid var(--rim);text-align:center">
+    <button class="hero-cta" onclick="showAuth('signup')" style="max-width:100%;margin-bottom:10px">
+      START GENERATING — IT'S FREE →
+    </button>
+    <div class="hero-fine">3 FREE VIDEOS · NO CREDIT CARD · CANCEL ANYTIME</div>
+  </div>
+
+  <footer class="l-footer">
+    <div class="l-footer-logo">STORY<em>FORGE</em></div>
+    <div class="l-footer-sub">© 2025 StoryForge · AI TikTok Video Factory</div>
+  </footer>
+
+</div><!-- /landing -->
+
+
+<!-- ═══════════ AUTH ═══════════ -->
+<div class="screen" id="screen-auth">
+  <div class="auth-logo">STORY<em>FORGE</em></div>
+  <div class="auth-tagline">AI Video Factory</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab on" id="at-su" onclick="swTab('su')">SIGN UP</button>
+      <button class="auth-tab" id="at-li" onclick="swTab('li')">LOG IN</button>
+    </div>
+    <div id="f-su">
+      <div class="auth-field"><label>Full Name</label><input type="text" id="su-name" placeholder="John Smith" autocomplete="name"/></div>
+      <div class="auth-field"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com" autocomplete="email"/></div>
+      <div class="auth-field"><label>Password</label><input type="password" id="su-pass" placeholder="Min. 6 characters" autocomplete="new-password"/></div>
+      <button class="auth-submit" onclick="doSignup()">CREATE FREE ACCOUNT →</button>
+      <div class="auth-err" id="su-err"></div>
+      <div class="auth-switch">Already have an account? <a onclick="swTab('li')">Log in</a></div>
+    </div>
+    <div id="f-li" style="display:none">
+      <div class="auth-field"><label>Email</label><input type="email" id="li-email" placeholder="you@example.com" autocomplete="email"/></div>
+      <div class="auth-field"><label>Password</label><input type="password" id="li-pass" placeholder="Your password" autocomplete="current-password"/></div>
+      <button class="auth-submit" onclick="doLogin()">LOG IN TO STORYFORGE →</button>
+      <div class="auth-err" id="li-err"></div>
+      <div class="auth-switch">No account? <a onclick="swTab('su')">Sign up free</a></div>
+    </div>
+  </div>
+  <div class="auth-back" onclick="showScreen('landing')">← BACK TO HOMEPAGE</div>
 </div>
 
-<!-- QUEUE -->
-<div class="page" id="page-queue">
-  <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:16px; margin-top:4px;">
-    Video Queue
-  </div>
 
-  <div class="queue-item">
-    <div class="q-thumb">😨</div>
-    <div class="q-info">
-      <div class="q-title">The Murder That Shocked a Town</div>
-      <div class="q-meta">True Crime · 60s · Tomorrow 9AM</div>
-    </div>
-    <div class="q-status s-queued">Queued</div>
-  </div>
-  <div class="queue-item">
-    <div class="q-thumb">👻</div>
-    <div class="q-info">
-      <div class="q-title">The Hotel Room Nobody Checks</div>
-      <div class="q-meta">Horror · 60s · Processing</div>
-    </div>
-    <div class="q-status s-building">Building</div>
-  </div>
-  <div class="queue-item">
-    <div class="q-thumb">🧠</div>
-    <div class="q-info">
-      <div class="q-title">Why You Can't Stop Scrolling</div>
-      <div class="q-meta">Psychology · 30s · Wed 6PM</div>
-    </div>
-    <div class="q-status s-queued">Queued</div>
-  </div>
-  <div class="queue-item">
-    <div class="q-thumb">💰</div>
-    <div class="q-info">
-      <div class="q-title">5 Stocks That Made Millionaires</div>
-      <div class="q-meta">Finance · 45s · Posted</div>
-    </div>
-    <div class="q-status s-live">Live ✓</div>
-  </div>
-  <div class="queue-item">
-    <div class="q-thumb">🌍</div>
-    <div class="q-info">
-      <div class="q-title">The War Nobody Talks About</div>
-      <div class="q-meta">History · 60s · Posted</div>
-    </div>
-    <div class="q-status s-live">Live ✓</div>
-  </div>
-</div>
+<!-- ═══════════ APP ═══════════ -->
+<div class="screen" id="screen-app">
 
-<!-- CHANNELS -->
-<div class="page" id="page-channels">
-  <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:16px; margin-top:4px;">
-    My Channels
-  </div>
-
-  <div class="channel-item">
-    <div class="ch-avatar" style="background:rgba(255,77,109,0.15)">😨</div>
-    <div>
-      <div class="ch-name">@truecrime.daily</div>
-      <div class="ch-sub">TikTok · 12.4k followers</div>
-    </div>
-    <div class="ch-stats">
-      <div class="ch-views">847K</div>
-      <div class="ch-trend">↑ views/mo</div>
+  <div class="a-nav">
+    <div class="a-logo">STORY<em>FORGE</em></div>
+    <div class="a-nav-r">
+      <div class="live-badge"><span class="sys-dot" style="width:5px;height:5px"></span>LIVE</div>
+      <button class="logout-btn" onclick="doLogout()" title="Log out">⏏</button>
     </div>
   </div>
 
-  <div class="channel-item">
-    <div class="ch-avatar" style="background:rgba(232,255,71,0.1)">💰</div>
-    <div>
-      <div class="ch-name">@moneyminds.ai</div>
-      <div class="ch-sub">YouTube · 8.1k subs</div>
+  <!-- DASHBOARD -->
+  <div class="page on" id="page-home">
+    <div class="pg-head">
+      <div class="pg-eye">Welcome back, <span id="uName">creator</span></div>
+      <div class="pg-title">YOUR<br>FACTORY<br>IS <em>LIVE</em></div>
     </div>
-    <div class="ch-stats">
-      <div class="ch-views">391K</div>
-      <div class="ch-trend">↑ views/mo</div>
-    </div>
-  </div>
 
-  <div class="channel-item">
-    <div class="ch-avatar" style="background:rgba(77,255,195,0.1)">🧠</div>
-    <div>
-      <div class="ch-name">@psychfacts</div>
-      <div class="ch-sub">YT Shorts · 3.2k subs</div>
-    </div>
-    <div class="ch-stats">
-      <div class="ch-views">156K</div>
-      <div class="ch-trend">↑ views/mo</div>
-    </div>
-  </div>
-
-  <button class="add-channel">+ Connect New Channel</button>
-</div>
-
-<!-- ANALYTICS -->
-<div class="page" id="page-analytics">
-  <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:16px; margin-top:4px;">
-    Revenue
-  </div>
-
-  <div class="revenue-big">
-    <div class="revenue-label">This Month</div>
-    <div class="revenue-num">$847</div>
-    <div class="revenue-sub">↑ 33% from last month · On track for $1,200</div>
-  </div>
-
-  <div class="card">
-    <label class="form-label">Income Breakdown</label>
-
-    <div class="income-row">
-      <div>
-        <div class="income-source">YouTube Ad Revenue</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:65%; background:var(--accent3)"></div></div>
+    <div class="use-bar" id="useBar">
+      <div class="use-top">
+        <div class="use-label">Free Plan · Videos This Month</div>
+        <div class="use-count" id="uCount">0 / 3 used</div>
       </div>
-      <div class="income-amount" style="margin-left:16px">$551</div>
+      <div class="use-track"><div class="use-fill" id="uFill" style="width:0%"></div></div>
+      <div class="use-cta">
+        <span class="use-cta-text">Upgrade for 30 videos/mo + auto-post</span>
+        <button class="use-up-btn" onclick="showModal()">UPGRADE →</button>
+      </div>
     </div>
 
-    <div class="income-row">
-      <div>
-        <div class="income-source">Affiliate Links</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:25%; background:var(--accent)"></div></div>
-      </div>
-      <div class="income-amount" style="margin-left:16px">$212</div>
+    <div class="q-grid">
+      <button class="q-btn prime" onclick="gotoPage('generate')">
+        <div class="q-btn-head">⚡ GENERATE</div>
+        <div class="q-btn-sub">New video</div>
+      </button>
+      <button class="q-btn sec" onclick="gotoPage('queue')">
+        <div class="q-btn-head">≡ QUEUE</div>
+        <div class="q-btn-sub">4 pending</div>
+      </button>
     </div>
 
-    <div class="income-row">
-      <div>
-        <div class="income-source">Tool Subscriptions</div>
-        <div class="progress-bar"><div class="progress-fill" style="width:10%; background:var(--accent2)"></div></div>
-      </div>
-      <div class="income-amount" style="margin-left:16px">$84</div>
+    <div class="stat-grid">
+      <div class="stat-tile" style="--tl:var(--green)"><div class="stat-label">Videos / Mo</div><div class="stat-val">24</div><div class="stat-delta">↑ 8 MORE</div></div>
+      <div class="stat-tile" style="--tl:var(--amber)"><div class="stat-label">Total Views</div><div class="stat-val">1.4M</div><div class="stat-delta">↑ 34% WK</div></div>
+      <div class="stat-tile" style="--tl:var(--red)"><div class="stat-label">Revenue</div><div class="stat-val">$847</div><div class="stat-delta">↑ $210 MO</div></div>
+      <div class="stat-tile" style="--tl:#a78bfa"><div class="stat-label">Auto-Posted</div><div class="stat-val">18</div><div class="stat-delta">6 PENDING</div></div>
     </div>
+
+    <div class="sec-hd"><div class="sec-title">RECENT VIDEOS</div><div class="sec-badge">4 QUEUED</div></div>
+    <div class="v-item" style="--il:var(--red)"><div class="v-thumb">😨</div><div class="v-info"><div class="v-title">The Murder That Shocked a Town</div><div class="v-meta">True Crime · 60s · Posts 9AM</div><div class="v-status s-q">QUEUED</div></div></div>
+    <div class="v-item" style="--il:var(--green)"><div class="v-thumb">💰</div><div class="v-info"><div class="v-title">5 Stocks That Made Millionaires</div><div class="v-meta">Finance · 45s · YouTube</div><div class="v-status s-live">LIVE ✓</div></div></div>
+    <div class="v-item" style="--il:#a78bfa"><div class="v-thumb">👻</div><div class="v-info"><div class="v-title">The Hotel Room Nobody Checks</div><div class="v-meta">Horror · 60s · Building...</div><div class="v-status s-bld">BUILDING</div></div></div>
   </div>
 
-  <div class="card">
-    <label class="form-label">Best Performing Video</label>
-    <div style="font-size:14px; font-weight:600; margin-bottom:4px">"5 Stocks That Made Millionaires"</div>
-    <div style="font-size:12px; color:var(--text3); font-family:'DM Mono',monospace">Finance · 247K views · $143 revenue</div>
-    <div style="margin-top:12px; display:flex; gap:10px">
-      <div style="flex:1; background:var(--surface2); border-radius:8px; padding:10px; text-align:center">
-        <div style="font-family:'DM Serif Display',serif; font-size:1.3rem">8.4%</div>
-        <div style="font-size:10px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:2px">Click Rate</div>
+  <!-- GENERATE -->
+  <div class="page" id="page-generate">
+    <div class="pg-head"><div class="pg-eye">Step by step</div><div class="pg-title">GENERATE<br><em>VIDEO</em></div></div>
+
+    <div class="g-card">
+      <div class="f-label">Niche</div>
+      <div class="tier-tag free">— FREE</div>
+      <div class="n-grid" style="margin-bottom:9px">
+        <div class="n-btn sel" onclick="pickNiche(this,'Motivation')"><span class="ei">✨</span>Motivation</div>
+        <div class="n-btn" onclick="pickNiche(this,'History')"><span class="ei">🌍</span>History</div>
+        <div class="n-btn" onclick="pickNiche(this,'Psychology')"><span class="ei">🧠</span>Psychology</div>
       </div>
-      <div style="flex:1; background:var(--surface2); border-radius:8px; padding:10px; text-align:center">
-        <div style="font-family:'DM Serif Display',serif; font-size:1.3rem">73%</div>
-        <div style="font-size:10px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:2px">Watch Time</div>
+      <div class="tier-tag pro">— PRO 🔒</div>
+      <div class="n-grid">
+        <div class="n-btn locked" onclick="showModal()"><span class="ei">😨</span>True Crime</div>
+        <div class="n-btn locked" onclick="showModal()"><span class="ei">💰</span>Finance</div>
+        <div class="n-btn locked" onclick="showModal()"><span class="ei">👻</span>Horror</div>
       </div>
-      <div style="flex:1; background:var(--surface2); border-radius:8px; padding:10px; text-align:center">
-        <div style="font-family:'DM Serif Display',serif; font-size:1.3rem">12K</div>
-        <div style="font-size:10px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:2px">Shares</div>
+    </div>
+
+    <div class="g-card">
+      <div class="f-label">Duration</div>
+      <div class="sel-wrap"><select class="sel-inp" id="durSel"><option>30 seconds (viral short)</option><option selected>60 seconds (standard)</option><option>90 seconds (story format)</option></select></div>
+    </div>
+
+    <div class="g-card">
+      <div class="f-label">AI Voice</div>
+      <div class="vc-grid">
+        <div class="vc sel" onclick="pickVoice(this,'Adam')"><div class="vc-top"><div class="vc-av va-m">A</div><div><div class="vc-name">Adam <span class="vc-def">DEFAULT</span></div><div class="vc-desc">Deep · Clear · TikTok</div></div></div><button class="vc-prev" onclick="prevV(event,'Adam','Hey, you need to hear this story. Trust me, you won\'t believe what happened.')">▶ PREVIEW</button></div>
+        <div class="vc" onclick="pickVoice(this,'Josh')"><div class="vc-top"><div class="vc-av va-m">J</div><div><div class="vc-name">Josh</div><div class="vc-desc">Young · Energetic</div></div></div><button class="vc-prev" onclick="prevV(event,'Josh','Wait till you hear this. Nobody\'s talking about it.')">▶ PREVIEW</button></div>
+        <div class="vc" onclick="pickVoice(this,'Arnold')"><div class="vc-top"><div class="vc-av va-m">AR</div><div><div class="vc-name">Arnold</div><div class="vc-desc">Deep · Authoritative</div></div></div><button class="vc-prev" onclick="prevV(event,'Arnold','What I\'m about to tell you will change everything.')">▶ PREVIEW</button></div>
+        <div class="vc" onclick="pickVoice(this,'Rachel')"><div class="vc-top"><div class="vc-av va-f">R</div><div><div class="vc-name">Rachel</div><div class="vc-desc">Female · Neutral</div></div></div><button class="vc-prev" onclick="prevV(event,'Rachel','Nobody talks about this. Once you know, you can\'t unknow it.')">▶ PREVIEW</button></div>
+        <div class="vc" onclick="pickVoice(this,'Bella')"><div class="vc-top"><div class="vc-av va-f">B</div><div><div class="vc-name">Bella</div><div class="vc-desc">Warm · Storyteller</div></div></div><button class="vc-prev" onclick="prevV(event,'Bella','Stay till the end. It gets so much darker.')">▶ PREVIEW</button></div>
+        <div class="vc" onclick="pickVoice(this,'Whisper')"><div class="vc-top"><div class="vc-av va-x">~</div><div><div class="vc-name">ASMR</div><div class="vc-desc">Soft · Whisper</div></div></div><button class="vc-prev" onclick="prevV(event,'Whisper','Close your eyes. Let me tell you something nobody else will.')">▶ PREVIEW</button></div>
+      </div>
+      <div class="prev-player" id="ppLayer" style="display:none">
+        <div class="prev-playing">
+          <div class="prev-wave"><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="prev-lbl" id="ppLbl">Generating...</div>
+          <button class="prev-stop" onclick="stopPrev()">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="g-card">
+      <div class="f-label">Background Footage</div>
+      <div class="sel-wrap"><select class="sel-inp" id="bgSel"><option selected>Minecraft Parkour</option><option>Subway Surfers</option><option>Satisfying Cooking</option><option>Soap Cutting</option><option>Nature / Aerial</option><option>City Timelapse</option></select></div>
+    </div>
+
+    <div class="g-card">
+      <div class="f-label" style="margin-bottom:4px">Options</div>
+      <div class="tog-row"><div class="tog-info">Auto-Caption<small>Burn subtitles into video</small></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="tog-row"><div class="tog-info">Auto-Post to YouTube<small>Uploads when ready</small></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="tog-row"><div class="tog-info">Affiliate Link in Bio<small>Auto-rotate top offers</small></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="tog-row"><div class="tog-info">Cross-post to TikTok<small>Manual upload reminder</small></div><button class="tog" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+
+    <button class="gen-btn" id="genBtn" onclick="genScript()">⚡ GENERATE SCRIPT</button>
+
+    <div class="out-box" id="outBox">
+      <div class="step-card lk" id="sc1">
+        <div class="st-hd"><div class="st-n" id="sn1">1</div><div class="st-title">Script</div><div class="st-status" id="ss1"></div></div>
+        <div class="script-out" id="scriptOut"></div>
+        <div class="act-row" id="sActs" style="display:none">
+          <button class="act-btn" onclick="genScript()">↺ REDO</button>
+          <button class="act-btn p" onclick="startVO()">🎙 VOICEOVER →</button>
+        </div>
+      </div>
+      <div class="step-card lk" id="sc2">
+        <div class="st-hd"><div class="st-n" id="sn2">2</div><div class="st-title">Voiceover</div><div class="st-status" id="ss2"></div></div>
+        <div class="st-body" id="voBody"><div style="font-size:10px;color:var(--chalk4);font-weight:400">Generate script first</div></div>
+      </div>
+      <div class="step-card lk" id="sc3">
+        <div class="st-hd"><div class="st-n" id="sn3">3</div><div class="st-title">Video Assembly</div><div class="st-status" id="ss3"></div></div>
+        <div class="st-body" id="vidBody"><div style="font-size:10px;color:var(--chalk4);font-weight:400">Voiceover needed first</div></div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- SETTINGS PAGE -->
-<div class="page" id="page-settings">
-  <div style="font-family:'DM Serif Display',serif; font-size:1.4rem; margin-bottom:16px; margin-top:4px;">
-    Settings
+  <!-- QUEUE -->
+  <div class="page" id="page-queue">
+    <div class="pg-head"><div class="pg-eye">Scheduled</div><div class="pg-title">VIDEO<br><em>QUEUE</em></div></div>
+    <div class="v-item" style="--il:var(--red)"><div class="v-thumb">😨</div><div class="v-info"><div class="v-title">The Murder That Shocked a Town</div><div class="v-meta">True Crime · 60s · Tomorrow 9AM</div><div class="v-status s-q">QUEUED</div></div></div>
+    <div class="v-item" style="--il:#a78bfa"><div class="v-thumb">👻</div><div class="v-info"><div class="v-title">The Hotel Room Nobody Checks</div><div class="v-meta">Horror · 60s · Processing</div><div class="v-status s-bld">BUILDING</div></div></div>
+    <div class="v-item" style="--il:var(--amber)"><div class="v-thumb">🧠</div><div class="v-info"><div class="v-title">Why You Can't Stop Scrolling</div><div class="v-meta">Psychology · 30s · Wed 6PM</div><div class="v-status s-q">QUEUED</div></div></div>
+    <div class="v-item" style="--il:var(--green)"><div class="v-thumb">💰</div><div class="v-info"><div class="v-title">5 Stocks That Made Millionaires</div><div class="v-meta">Finance · 45s · Posted</div><div class="v-status s-live">LIVE ✓</div></div></div>
+    <div class="v-item" style="--il:var(--amber)"><div class="v-thumb">🌍</div><div class="v-info"><div class="v-title">The War Nobody Talks About</div><div class="v-meta">History · 60s · Posted</div><div class="v-status s-live">LIVE ✓</div></div></div>
   </div>
 
-  <div class="card">
-    <label class="form-label">ElevenLabs API Key</label>
-    <div style="font-size:12px; color:var(--text2); margin-bottom:12px; line-height:1.5;">
-      Get your free key at <span style="color:var(--accent)">elevenlabs.io</span> → Profile → API Keys
+  <!-- REVENUE -->
+  <div class="page" id="page-analytics">
+    <div class="pg-head"><div class="pg-eye">Earnings</div><div class="pg-title">YOUR<br><em>REVENUE</em></div></div>
+    <div class="rev-big"><div class="rev-label">This Month</div><div class="rev-num">$847</div><div class="rev-sub">↑ 33% from last month · On track for $1,200</div></div>
+    <div class="g-card">
+      <div class="f-label">Income Breakdown</div>
+      <div class="inc-row"><div><div class="inc-src">YouTube Ad Revenue</div><div class="prog-bar"><div class="prog-fill" style="width:65%;background:var(--green)"></div></div></div><div class="inc-amt" style="margin-left:16px">$551</div></div>
+      <div class="inc-row"><div><div class="inc-src">Affiliate Links</div><div class="prog-bar"><div class="prog-fill" style="width:25%;background:var(--amber)"></div></div></div><div class="inc-amt" style="margin-left:16px">$212</div></div>
+      <div class="inc-row"><div><div class="inc-src">Tool Subscriptions</div><div class="prog-bar"><div class="prog-fill" style="width:10%;background:var(--red)"></div></div></div><div class="inc-amt" style="margin-left:16px">$84</div></div>
     </div>
-    <div style="position:relative; margin-bottom:10px;">
-      <input type="password" id="elevenLabsKey" placeholder="Paste your API key here..."
-        style="width:100%; background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:12px 44px 12px 14px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; outline:none;"
-        oninput="saveKey(this.value)"
-      />
-      <button onclick="toggleKeyVisibility()" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text2); font-size:16px; cursor:pointer;" id="eyeBtn">👁</button>
-    </div>
-    <div id="keyStatus" style="font-size:11px; font-family:'DM Mono',monospace; color:var(--text3); min-height:16px;"></div>
-  </div>
-
-  <div class="card">
-    <label class="form-label">Anthropic API Key</label>
-    <div style="font-size:12px; color:var(--text2); margin-bottom:12px; line-height:1.5;">
-      For AI script generation. Get at <span style="color:var(--accent)">console.anthropic.com</span>
-    </div>
-    <div style="position:relative;">
-      <input type="password" id="anthropicKey" placeholder="Paste your Anthropic key here..."
-        style="width:100%; background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:12px 14px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; outline:none;"
-        oninput="saveAnthropicKey(this.value)"
-      />
-    </div>
-  </div>
-
-  <div class="card">
-    <label class="form-label">Default Post Schedule</label>
-    <div class="select-wrap">
-      <select class="select-input">
-        <option>Once daily — 9:00 AM</option>
-        <option selected>Twice daily — 9AM & 6PM</option>
-        <option>Three times daily</option>
-        <option>Manual only</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="card">
-    <label class="form-label">Plan</label>
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <div style="font-size:14px; font-weight:600;">Free Plan</div>
-        <div style="font-size:11px; color:var(--text3); font-family:'DM Mono',monospace; margin-top:3px;">5 videos/mo · 3 niches · No auto-post</div>
+    <div class="g-card">
+      <div class="f-label">Best Performer</div>
+      <div style="font-family:var(--mono);font-size:12px;font-weight:700;margin-bottom:4px">"5 Stocks That Made Millionaires"</div>
+      <div style="font-size:10px;color:var(--chalk4);font-weight:400">Finance · 247K views · $143 revenue</div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        <div style="background:var(--void);border:1px solid var(--rim);border-radius:2px;padding:10px;text-align:center"><div style="font-family:var(--display);font-size:1.4rem;letter-spacing:1px">8.4%</div><div style="font-size:8px;color:var(--chalk4);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase">Click Rate</div></div>
+        <div style="background:var(--void);border:1px solid var(--rim);border-radius:2px;padding:10px;text-align:center"><div style="font-family:var(--display);font-size:1.4rem;letter-spacing:1px">73%</div><div style="font-size:8px;color:var(--chalk4);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase">Watch Time</div></div>
+        <div style="background:var(--void);border:1px solid var(--rim);border-radius:2px;padding:10px;text-align:center"><div style="font-family:var(--display);font-size:1.4rem;letter-spacing:1px">12K</div><div style="font-size:8px;color:var(--chalk4);margin-top:3px;letter-spacing:1.5px;text-transform:uppercase">Shares</div></div>
       </div>
-      <button onclick="showUpgrade()" style="padding:10px 16px; background:var(--accent); color:#000; border:none; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer;">Upgrade</button>
     </div>
   </div>
-</div>
+
+  <!-- SETTINGS -->
+  <div class="page" id="page-settings">
+    <div class="pg-head"><div class="pg-eye">Configuration</div><div class="pg-title">SETTINGS</div></div>
+    <div class="g-card">
+      <div class="f-label">ElevenLabs API Key</div>
+      <div style="font-size:10px;color:var(--chalk4);margin-bottom:9px;font-weight:400">Get your key at <span style="color:var(--green)">elevenlabs.io</span> → Profile → API Keys</div>
+      <div class="set-inp-wrap"><input type="password" id="elK" placeholder="sk_..." oninput="saveElKey(this.value)"/><button class="set-eye" onclick="toggleEye()" id="eyeBtn">👁</button></div>
+      <div class="key-ok" id="keyOk"></div>
+    </div>
+    <div class="g-card">
+      <div class="f-label">Anthropic API Key</div>
+      <div style="font-size:10px;color:var(--chalk4);margin-bottom:9px;font-weight:400">For script generation. Get at <span style="color:var(--green)">console.anthropic.com</span></div>
+      <div class="set-inp-wrap" style="margin-bottom:0"><input type="password" id="anK" placeholder="sk-ant-..." oninput="saveAnKey(this.value)" style="padding-right:14px"/></div>
+    </div>
+    <div class="g-card">
+      <div class="f-label" style="margin-bottom:9px">Post Schedule</div>
+      <div class="sel-wrap"><select class="sel-inp"><option>Once daily — 9AM</option><option selected>Twice daily — 9AM & 6PM</option><option>Three times daily</option><option>Manual only</option></select></div>
+    </div>
+    <div class="g-card">
+      <div class="f-label">Plan & Account</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div><div style="font-family:var(--mono);font-size:12px;font-weight:700">Free Plan</div><div style="font-size:9px;color:var(--chalk4);margin-top:2px;font-weight:400">3 videos/mo · 3 niches · No auto-post</div></div>
+        <button onclick="showModal()" style="padding:8px 13px;background:var(--green);color:var(--void);border:none;border-radius:2px;font-family:var(--display);font-size:13px;letter-spacing:2px;cursor:pointer;">UPGRADE</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:12px;font-weight:700" id="settEmail">—</div><div style="font-size:9px;color:var(--chalk4);margin-top:2px;font-weight:400">Member since today</div></div>
+        <button onclick="doLogout()" style="padding:8px 13px;background:var(--surface);color:var(--chalk3);border:1px solid var(--rim2);border-radius:2px;font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">LOG OUT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tabbar">
+    <button class="tab on" id="tb-home" onclick="showPage('home',this)"><span class="t-icon">⌂</span>HOME</button>
+    <button class="tab" id="tb-generate" onclick="showPage('generate',this)"><span class="t-icon">⚡</span>GENERATE</button>
+    <button class="tab" id="tb-queue" onclick="showPage('queue',this)"><span class="t-icon">≡</span>QUEUE</button>
+    <button class="tab" id="tb-analytics" onclick="showPage('analytics',this)"><span class="t-icon">$</span>REVENUE</button>
+    <button class="tab" id="tb-settings" onclick="showPage('settings',this)"><span class="t-icon">⚙</span>CONFIG</button>
+  </div>
+
+</div><!-- /app -->
+
 
 <!-- UPGRADE MODAL -->
-<div class="modal-overlay" id="upgradeModal" onclick="closeUpgrade(event)">
+<div class="modal-bg" id="modalBg" onclick="closeMod(event)">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">Unlock Pro Niches 🔒</div>
-    <div class="modal-sub">True Crime, Finance, and Horror are the highest-converting niches. Upgrade to Pro to access them.</div>
-    <div class="modal-features">
-      <div class="modal-feature"><span>😨</span> True Crime — avg 3x more views</div>
-      <div class="modal-feature"><span>💰</span> Finance — highest affiliate earnings</div>
-      <div class="modal-feature"><span>👻</span> Horror — most shared niche on TikTok</div>
-      <div class="modal-feature"><span>⚡</span> 30 videos/month (vs 5 free)</div>
-      <div class="modal-feature"><span>▶️</span> YouTube auto-upload included</div>
+    <div class="modal-title">UNLOCK PRO</div>
+    <div class="modal-sub">True Crime, Finance, and Horror are the highest-converting niches. Upgrade for all 6 niches plus 30 videos/mo.</div>
+    <div class="modal-feats">
+      <div class="modal-feat"><span class="ic">😨</span>True Crime — avg 3× more views</div>
+      <div class="modal-feat"><span class="ic">💰</span>Finance — highest affiliate earnings</div>
+      <div class="modal-feat"><span class="ic">👻</span>Horror — most shared niche on TikTok</div>
+      <div class="modal-feat"><span class="ic">⚡</span>30 videos/month (vs 3 free)</div>
+      <div class="modal-feat"><span class="ic">▶</span>Auto-upload to YouTube & TikTok</div>
     </div>
-    <button class="modal-upgrade-btn">Upgrade to Pro — $29/mo</button>
-    <button class="modal-cancel" onclick="closeUpgrade()">Maybe later</button>
+    <button class="modal-cta">UPGRADE TO PRO — $29/MO</button>
+    <button class="modal-skip" onclick="closeMod()">MAYBE LATER</button>
   </div>
 </div>
 
-<!-- BOTTOM TAB BAR -->
-<div class="tabbar">
-  <button class="tab active" onclick="showPage('home', this)">
-    <span class="tab-icon">🏠</span>Home
-  </button>
-  <button class="tab" onclick="showPage('generate', this)">
-    <span class="tab-icon">⚡</span>Generate
-  </button>
-  <button class="tab" onclick="showPage('queue', this)">
-    <span class="tab-icon">📋</span>Queue
-  </button>
-  <button class="tab" onclick="showPage('analytics', this)">
-    <span class="tab-icon">💰</span>Revenue
-  </button>
-  <button class="tab" onclick="showPage('settings', this)">
-    <span class="tab-icon">⚙️</span>Settings
-  </button>
-</div>
 
 <script>
-let selectedNiche = 'Motivation';
-let selectedVoice = 'Adam';
-let previewAudio = null;
-let currentScript = '';
+/* ── ROUTING ── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id==='landing') setTimeout(startDemoLoop, 1000);
+  else clearTimeout(dT);
+}
 
-// ElevenLabs voice IDs (official)
-const VOICE_IDS = {
-  'Adam':   'pNInz6obpgDQGcFmaJgB',
-  'Josh':   'TxGEqnHWrfWFTfGW9XjX',
-  'Arnold': 'VR6AewLTigWG4xSOukaG',
-  'Rachel': '21m00Tcm4TlvDq8ikWAM',
-  'Bella':  'EXAVITQu4vr4xnSDxMaL',
-  'Whisper':'AZnzlk1XvdvUeBnXmlld'
-};
+function sscroll(id) { document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
 
-// Load saved keys on startup
+function showAuth(tab) { showScreen('auth'); swTab(tab==='signup'?'su':'li'); clearTimeout(dT); }
+
+function showPage(name, btn) {
+  document.querySelectorAll('#screen-app .page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('page-'+name).classList.add('on');
+  (btn || document.getElementById('tb-'+name))?.classList.add('on');
+  window.scrollTo(0,0);
+}
+
+function gotoPage(name) {
+  showPage(name);
+  document.getElementById('tb-'+name)?.classList.add('on');
+  document.querySelectorAll('.tab').forEach(t => { if(t.id !== 'tb-'+name) t.classList.remove('on'); });
+}
+
+/* ── AUTH ── */
+function swTab(t) {
+  document.getElementById('f-su').style.display = t==='su'?'block':'none';
+  document.getElementById('f-li').style.display  = t==='li'?'block':'none';
+  document.getElementById('at-su').classList.toggle('on', t==='su');
+  document.getElementById('at-li').classList.toggle('on', t==='li');
+}
+
+function doSignup() {
+  const n=document.getElementById('su-name').value.trim();
+  const e=document.getElementById('su-email').value.trim();
+  const p=document.getElementById('su-pass').value;
+  const err=document.getElementById('su-err');
+  if (!n) { err.textContent='Please enter your name.'; return; }
+  if (!e.includes('@')) { err.textContent='Please enter a valid email.'; return; }
+  if (p.length<6) { err.textContent='Password must be at least 6 characters.'; return; }
+  const u=JSON.parse(localStorage.getItem('sf_u')||'{}');
+  if (u[e]) { err.textContent='An account with this email already exists.'; return; }
+  u[e]={name:n,pass:p,vids:0};
+  localStorage.setItem('sf_u',JSON.stringify(u));
+  loginUser(e,n);
+}
+
+function doLogin() {
+  const e=document.getElementById('li-email').value.trim();
+  const p=document.getElementById('li-pass').value;
+  const err=document.getElementById('li-err');
+  const u=JSON.parse(localStorage.getItem('sf_u')||'{}');
+  if (!u[e]) { err.textContent='No account found with that email.'; return; }
+  if (u[e].pass!==p) { err.textContent='Incorrect password.'; return; }
+  loginUser(e,u[e].name);
+}
+
+function loginUser(e,n) {
+  localStorage.setItem('sf_s',JSON.stringify({e,n}));
+  bootApp(e,n); showScreen('app');
+}
+
+function doLogout() { localStorage.removeItem('sf_s'); showScreen('landing'); }
+
+function bootApp(e,n) {
+  document.getElementById('uName').textContent = n.split(' ')[0];
+  document.getElementById('settEmail').textContent = e;
+  const el=localStorage.getItem('el_key'), an=localStorage.getItem('an_key');
+  if (el) { document.getElementById('elK').value=el; setKeyOk(el); }
+  if (an) document.getElementById('anK').value=an;
+  refreshUsage(e);
+}
+
+function refreshUsage(e) {
+  const u=JSON.parse(localStorage.getItem('sf_u')||'{}');
+  const used=u[e]?.vids||0;
+  document.getElementById('uCount').textContent=used+' / 3 used';
+  document.getElementById('uFill').style.width=Math.min(100,(used/3)*100)+'%';
+  if(used>=3) { document.getElementById('uFill').style.background='var(--red)'; document.getElementById('uFill').style.boxShadow='0 0 6px rgba(255,51,68,0.6)'; }
+}
+
 window.addEventListener('load', () => {
-  const el = localStorage.getItem('el_key');
-  const an = localStorage.getItem('an_key');
-  if (el) document.getElementById('elevenLabsKey').value = el;
-  if (an) document.getElementById('anthropicKey').value = an;
-  if (el) updateKeyStatus(el);
-  // Init waveform bars
-  const wf = document.getElementById('voWaveform');
-  if (wf) {
-    for (let i = 0; i < 40; i++) {
-      const b = document.createElement('div');
-      b.className = 'vo-bar';
-      b.style.height = (Math.random() * 28 + 8) + 'px';
-      b.style.animationDelay = (Math.random() * 1) + 's';
-      wf.appendChild(b);
-    }
-  }
+  const s=JSON.parse(localStorage.getItem('sf_s')||'null');
+  if (s) { bootApp(s.e,s.n); showScreen('app'); }
+  else { showScreen('landing'); setTimeout(startDemoLoop, 1200); }
 });
 
-function saveKey(val) {
-  localStorage.setItem('el_key', val);
-  updateKeyStatus(val);
+/* ── FAQ / MODAL ── */
+function faqT(btn) { btn.closest('.faq-row').classList.toggle('open'); }
+function showModal() { document.getElementById('modalBg').classList.add('on'); }
+function closeMod(e) { if(!e||e.target===document.getElementById('modalBg')) document.getElementById('modalBg').classList.remove('on'); }
+
+/* ── KEYS ── */
+function saveElKey(v) { localStorage.setItem('el_key',v); setKeyOk(v); }
+function saveAnKey(v) { localStorage.setItem('an_key',v); }
+function setKeyOk(v) {
+  const s=document.getElementById('keyOk'); if(!s) return;
+  if(v&&v.length>20) { s.textContent='✓ KEY SAVED — ELEVENLABS ENABLED'; s.style.color='var(--green)'; }
+  else s.textContent='';
+}
+function toggleEye() {
+  const i=document.getElementById('elK'), b=document.getElementById('eyeBtn');
+  i.type=i.type==='password'?'text':'password'; b.textContent=i.type==='password'?'👁':'🙈';
 }
 
-function saveAnthropicKey(val) {
-  localStorage.setItem('an_key', val);
-}
+/* ── VOICE ── */
+let curNiche='Motivation', curVoice='Adam', prevAudio=null, curScript='';
+const VIDS={Adam:'pNInz6obpgDQGcFmaJgB',Josh:'TxGEqnHWrfWFTfGW9XjX',Arnold:'VR6AewLTigWG4xSOukaG',Rachel:'21m00Tcm4TlvDq8ikWAM',Bella:'EXAVITQu4vr4xnSDxMaL',Whisper:'AZnzlk1XvdvUeBnXmlld'};
 
-function updateKeyStatus(val) {
-  const s = document.getElementById('keyStatus');
-  if (!s) return;
-  if (val.length > 20) {
-    s.textContent = '✓ Key saved — ElevenLabs voiceover enabled';
-    s.style.color = 'var(--accent3)';
-  } else {
-    s.textContent = '';
-  }
-}
+function pickNiche(el,n) { document.querySelectorAll('.n-btn:not(.locked)').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); curNiche=n; }
+function pickVoice(c,v) { document.querySelectorAll('.vc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); curVoice=v; }
 
-function toggleKeyVisibility() {
-  const input = document.getElementById('elevenLabsKey');
-  const btn = document.getElementById('eyeBtn');
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '🙈';
-  } else {
-    input.type = 'password';
-    btn.textContent = '👁';
-  }
-}
-
-function selectVoice(card, voice) {
-  document.querySelectorAll('.voice-card').forEach(c => c.classList.remove('selected'));
-  card.classList.add('selected');
-  selectedVoice = voice;
-}
-
-async function previewVoice(e, voice, text) {
+async function prevV(e,v,text) {
   e.stopPropagation();
-  const player = document.getElementById('previewPlayer');
-  const label = document.getElementById('previewLabel');
-  if (previewAudio) { previewAudio.pause(); previewAudio = null; }
-  player.style.display = 'block';
-
-  const elKey = localStorage.getItem('el_key');
-  if (elKey && elKey.length > 20) {
-    label.textContent = `Generating ${voice} preview via ElevenLabs...`;
+  const pl=document.getElementById('ppLayer'), lb=document.getElementById('ppLbl');
+  if(prevAudio){prevAudio.pause();prevAudio=null;}
+  pl.style.display='block';
+  const k=localStorage.getItem('el_key');
+  if(k&&k.length>20) {
+    lb.textContent='GENERATING '+v.toUpperCase()+' VIA ELEVENLABS...';
     try {
-      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_IDS[voice]}`, {
-        method: 'POST',
-        headers: {
-          'xi-api-key': elKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          text: text,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
-        })
-      });
-      if (res.ok) {
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        previewAudio = new Audio(url);
-        label.textContent = `▶ Playing ${voice}...`;
-        previewAudio.play();
-        previewAudio.onended = () => { player.style.display = 'none'; };
-        return;
-      }
+      const r=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+VIDS[v],{method:'POST',headers:{'xi-api-key':k,'Content-Type':'application/json'},body:JSON.stringify({text,model_id:'eleven_monolingual_v1',voice_settings:{stability:0.5,similarity_boost:0.75}})});
+      if(r.ok){const blob=await r.blob();const url=URL.createObjectURL(blob);prevAudio=new Audio(url);lb.textContent='▶ PLAYING '+v.toUpperCase()+'...';prevAudio.play();prevAudio.onended=()=>pl.style.display='none';return;}
     } catch(err) {}
   }
-
-  // Fallback: device TTS
-  if ('speechSynthesis' in window) {
+  if('speechSynthesis'in window) {
     window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    const voices = window.speechSynthesis.getVoices();
-    if (['Adam','Josh','Arnold'].includes(voice)) {
-      utt.pitch = voice === 'Arnold' ? 0.7 : voice === 'Josh' ? 1.1 : 0.85;
-      utt.rate = voice === 'Josh' ? 1.1 : 0.9;
-      const mv = voices.find(v => v.name.includes('Daniel') || v.name.includes('Alex') || v.name.includes('Fred'));
-      if (mv) utt.voice = mv;
-    } else if (voice === 'Whisper') {
-      utt.pitch = 0.9; utt.rate = 0.75; utt.volume = 0.6;
-    } else {
-      utt.pitch = voice === 'Bella' ? 1.1 : 1.0; utt.rate = 0.9;
-      const fv = voices.find(v => v.name.includes('Samantha') || v.name.includes('Victoria'));
-      if (fv) utt.voice = fv;
-    }
-    label.textContent = elKey ? `ElevenLabs error — using device voice for ${voice}` : `▶ Device preview for ${voice} (add ElevenLabs key for real voice)`;
-    utt.onend = () => { player.style.display = 'none'; };
+    const utt=new SpeechSynthesisUtterance(text);
+    utt.pitch=v==='Arnold'?.7:v==='Josh'?1.1:v==='Whisper'?.9:v==='Bella'?1.1:.85;
+    utt.rate=v==='Josh'?1.1:v==='Whisper'?.75:.9;
+    lb.textContent=k?'ELEVENLABS ERROR — DEVICE PREVIEW':'▶ DEVICE PREVIEW — ADD ELEVENLABS KEY FOR REAL VOICE';
+    utt.onend=()=>pl.style.display='none';
     window.speechSynthesis.speak(utt);
   }
 }
+function stopPrev() { if(prevAudio){prevAudio.pause();prevAudio=null;} window.speechSynthesis?.cancel(); document.getElementById('ppLayer').style.display='none'; }
 
-function stopPreview() {
-  if (previewAudio) { previewAudio.pause(); previewAudio = null; }
-  window.speechSynthesis.cancel();
-  document.getElementById('previewPlayer').style.display = 'none';
-}
+/* ── GENERATE PIPELINE ── */
+async function genScript() {
+  const sess=JSON.parse(localStorage.getItem('sf_s')||'null');
+  if(sess) { const u=JSON.parse(localStorage.getItem('sf_u')||'{}'); if((u[sess.e]?.vids||0)>=3){showModal();return;} }
 
-function showUpgrade() {
-  document.getElementById('upgradeModal').classList.add('show');
-}
+  const btn=document.getElementById('genBtn'), ob=document.getElementById('outBox');
+  const so=document.getElementById('scriptOut'), sa=document.getElementById('sActs');
+  const s1=document.getElementById('sc1'), st1=document.getElementById('ss1');
 
-function closeUpgrade(e) {
-  if (!e || e.target === document.getElementById('upgradeModal')) {
-    document.getElementById('upgradeModal').classList.remove('show');
-  }
-}
+  btn.disabled=true; btn.textContent='⏳ WRITING SCRIPT...';
+  ob.classList.add('vis');
+  so.innerHTML='<div class="ld-row"><div class="spin"></div> CLAUDE IS WRITING YOUR SCRIPT...</div>';
+  sa.style.display='none'; s1.className='step-card as'; st1.textContent='WRITING...';
+  document.getElementById('sc2').className='step-card lk';
+  document.getElementById('sc3').className='step-card lk';
+  document.getElementById('voBody').innerHTML='<div style="font-size:10px;color:var(--chalk4);font-weight:400">Generate script first</div>';
+  document.getElementById('vidBody').innerHTML='<div style="font-size:10px;color:var(--chalk4);font-weight:400">Voiceover needed first</div>';
 
-function showPage(name, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  btn.classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function selectNiche(el, niche) {
-  document.querySelectorAll('.niche-btn:not(.locked)').forEach(b => b.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedNiche = niche;
-}
-
-// ── STEP 1: GENERATE SCRIPT ──
-async function generateScript() {
-  const btn = document.getElementById('genBtn');
-  const outputBox = document.getElementById('outputBox');
-  const scriptArea = document.getElementById('scriptArea');
-  const scriptActions = document.getElementById('scriptActions');
-  const stepCard = document.getElementById('stepScript');
-  const stepStatus = document.getElementById('stepStatus1');
-
-  btn.disabled = true;
-  btn.textContent = '⏳ Writing script...';
-  outputBox.classList.add('visible');
-  scriptArea.innerHTML = '<div class="loading-row"><div class="spinner"></div> Claude is writing your script...</div>';
-  scriptActions.style.display = 'none';
-  stepCard.className = 'step-card active-step';
-  stepStatus.textContent = 'Writing...';
-
-  // Lock steps 2 & 3
-  document.getElementById('stepVoice').className = 'step-card locked-step';
-  document.getElementById('stepVideo').className = 'step-card locked-step';
-  document.getElementById('voiceBody').innerHTML = '<div style="font-size:12px; color:var(--text3); font-family:\'DM Mono\',monospace;">Generate script first</div>';
-  document.getElementById('videoBody').innerHTML = '<div style="font-size:12px; color:var(--text3); font-family:\'DM Mono\',monospace;">Voiceover needed first</div>';
-
-  const anKey = localStorage.getItem('an_key');
-
+  const anK=localStorage.getItem('an_key');
   try {
-    const headers = { 'Content-Type': 'application/json' };
-    if (anKey) headers['x-api-key'] = anKey;
-
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: `You are a viral TikTok script writer. Write a gripping 60-second faceless TikTok video script for the niche: "${selectedNiche}".
-
-FORMAT exactly like this:
-🎬 TITLE: [catchy title]
-🪝 HOOK (0-3s): [scroll-stopping opening line]
-📖 STORY (3-55s): [main narration — conversational, punchy, builds tension]
-💥 OUTRO (55-60s): [follow for more CTA]
-#️⃣ HASHTAGS: [5-7 hashtags]
-
-Write it as spoken word. Short sentences. Create real tension. Make them NEED to watch till the end.`
-        }]
-      })
-    });
-
-    const data = await res.json();
-    currentScript = data.content?.map(i => i.text || '').join('') || 'Failed to generate.';
-
-    scriptArea.textContent = '';
-    let i = 0;
-    const chars = currentScript.split('');
-    const iv = setInterval(() => {
-      if (i < chars.length) {
-        scriptArea.textContent += chars[i];
-        i += 4;
-        scriptArea.scrollTop = scriptArea.scrollHeight;
-      } else {
-        scriptArea.textContent = currentScript;
-        clearInterval(iv);
-        scriptActions.style.display = 'grid';
-        stepCard.className = 'step-card done-step';
-        stepStatus.textContent = '✓ Done';
-        // Unlock step 2
-        document.getElementById('stepVoice').className = 'step-card';
-        document.getElementById('voiceBody').innerHTML = '<div style="font-size:12px; color:var(--text2); font-family:\'DM Mono\',monospace; margin-bottom:10px;">Ready — tap below to generate voiceover</div>';
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json',...(anK?{'x-api-key':anK}:{})},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:'You are a viral TikTok script writer. Write a gripping 60-second faceless TikTok video script for the niche: "'+curNiche+'".\n\nFORMAT exactly like this:\n🎬 TITLE: [catchy title]\n🪝 HOOK (0-3s): [scroll-stopping opening line]\n📖 STORY (3-55s): [main narration — conversational, punchy, builds tension]\n💥 OUTRO (55-60s): [follow for more CTA]\n#️⃣ HASHTAGS: [5-7 hashtags]\n\nWrite it as spoken word. Short sentences. Create real tension. Make them NEED to watch till the end.'}]})});
+    const d=await r.json();
+    curScript=d.content?.map(i=>i.text||'').join('')||'Failed to generate. Check your Anthropic API key in Settings.';
+    so.textContent=''; let i=0; const ch=curScript.split('');
+    const iv=setInterval(()=>{
+      if(i<ch.length){so.textContent+=ch[i];i+=4;so.scrollTop=so.scrollHeight;}
+      else{
+        so.textContent=curScript;clearInterval(iv);sa.style.display='grid';
+        s1.className='step-card dn';st1.textContent='✓ DONE';
+        document.getElementById('sc2').className='step-card';
+        document.getElementById('voBody').innerHTML='<div style="font-size:10px;color:var(--chalk3);font-weight:400;margin-bottom:7px">READY — GENERATE VOICEOVER BELOW</div>';
+        if(sess){const u=JSON.parse(localStorage.getItem('sf_u')||'{}');if(u[sess.e]){u[sess.e].vids=(u[sess.e].vids||0)+1;localStorage.setItem('sf_u',JSON.stringify(u));}refreshUsage(sess.e);}
       }
-    }, 8);
-
+    },8);
   } catch(err) {
-    currentScript = '';
-    scriptArea.textContent = '⚠️ Could not connect. Add your Anthropic API key in Settings.';
-    scriptActions.style.display = 'grid';
-    stepCard.className = 'step-card';
-    stepStatus.textContent = 'Error';
+    so.textContent='⚠ COULD NOT CONNECT. ADD YOUR ANTHROPIC API KEY IN SETTINGS.';
+    sa.style.display='grid'; s1.className='step-card'; st1.textContent='ERROR';
   }
-
-  btn.disabled = false;
-  btn.textContent = '⚡ Generate Script';
+  btn.disabled=false; btn.textContent='⚡ GENERATE SCRIPT';
 }
 
-// ── STEP 2: GENERATE VOICEOVER ──
-async function startVoiceover() {
-  const voiceStep = document.getElementById('stepVoice');
-  const voiceBody = document.getElementById('voiceBody');
-  const stepStatus2 = document.getElementById('stepStatus2');
-
-  voiceStep.className = 'step-card active-step';
-  stepStatus2.textContent = 'Generating...';
-
-  // Extract just the narration from script (strip emoji headers)
-  const narration = currentScript
-    .replace(/🎬.*\n/, '')
-    .replace(/🪝.*\n/, '')
-    .replace(/📖.*?:\s*/, '')
-    .replace(/💥.*\n[\s\S]*/, '')
-    .replace(/#️⃣.*/, '')
-    .trim();
-
-  const elKey = localStorage.getItem('el_key');
-
-  voiceBody.innerHTML = `
-    <div class="loading-row" style="margin-bottom:10px;">
-      <div class="spinner"></div>
-      <span id="voiceGenLabel">${elKey ? 'Sending to ElevenLabs...' : 'Generating with device voice...'}</span>
-    </div>`;
-
-  if (elKey && elKey.length > 20) {
-    // Real ElevenLabs generation
-    try {
-      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_IDS[selectedVoice] || VOICE_IDS['Adam']}`, {
-        method: 'POST',
-        headers: {
-          'xi-api-key': elKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          text: narration.substring(0, 2500),
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
-        })
-      });
-
-      if (res.ok) {
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        showVoicePlayer(voiceBody, stepStatus2, voiceStep, url, true);
-        return;
-      } else {
-        const err = await res.json();
-        voiceBody.innerHTML = `<div style="font-size:12px; color:var(--accent2); font-family:'DM Mono',monospace;">ElevenLabs error: ${err.detail?.message || 'Check your API key'}</div>`;
-        voiceStep.className = 'step-card';
-        stepStatus2.textContent = 'Error';
-        return;
-      }
-    } catch(err) {
-      // fall through to device TTS
-    }
+async function startVO() {
+  const s2=document.getElementById('sc2'), vb=document.getElementById('voBody'), st2=document.getElementById('ss2');
+  s2.className='step-card as'; st2.textContent='GENERATING...';
+  const narr=curScript.replace(/🎬.*\n/,'').replace(/🪝.*\n/,'').replace(/📖.*?:\s*/,'').replace(/💥.*\n[\s\S]*/,'').replace(/#️⃣.*/,'').trim();
+  const k=localStorage.getItem('el_key');
+  vb.innerHTML='<div class="ld-row"><div class="spin"></div><span>'+(k?'SENDING TO ELEVENLABS...':'GENERATING WITH DEVICE VOICE...')+'</span></div>';
+  if(k&&k.length>20){
+    try{
+      const r=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+(VIDS[curVoice]||VIDS.Adam),{method:'POST',headers:{'xi-api-key':k,'Content-Type':'application/json'},body:JSON.stringify({text:narr.substring(0,2500),model_id:'eleven_monolingual_v1',voice_settings:{stability:0.5,similarity_boost:0.75}})});
+      if(r.ok){const blob=await r.blob();const url=URL.createObjectURL(blob);showVOP(vb,s2,st2,url,true);return;}
+    }catch(err){}
   }
+  if('speechSynthesis'in window){const utt=new SpeechSynthesisUtterance(narr);utt.pitch=.85;utt.rate=.9;window.speechSynthesis.speak(utt);showVOP(vb,s2,st2,null,false);}
+}
 
-  // Device TTS fallback
-  if ('speechSynthesis' in window) {
-    const utt = new SpeechSynthesisUtterance(narration);
-    const voices = window.speechSynthesis.getVoices();
-    utt.pitch = 0.85; utt.rate = 0.9;
-    const mv = voices.find(v => v.name.includes('Daniel') || v.name.includes('Alex'));
-    if (mv) utt.voice = mv;
-    window.speechSynthesis.speak(utt);
-    showVoicePlayer(voiceBody, stepStatus2, voiceStep, null, false);
+function showVOP(vb,s2,st2,url,real) {
+  const dur=Math.floor(curScript.split(' ').length/2.5);
+  const bars=Array.from({length:34},(_,i)=>`<div class="vo-bar" style="height:${Math.round(Math.random()*20+4)}px;animation-delay:${(i*.05).toFixed(2)}s;"></div>`).join('');
+  vb.innerHTML=`<div class="vo-pl"><div class="vo-info"><div class="vo-icon">🎙</div><div class="vo-meta"><div class="vo-name">${curVoice} — ${real?'ELEVENLABS':'DEVICE TTS'}</div><div class="vo-det">~${dur}s · ${curScript.split(' ').length} words</div></div></div><div class="vo-wave">${bars}</div><div class="vo-ctrls">${url?`<button class="act-btn" onclick="playAu('${url}')">▶ PLAY</button><a href="${url}" download="voice.mp3" style="text-decoration:none;flex:1"><button class="act-btn" style="width:100%">⬇ MP3</button></a>`:'<button class="act-btn" style="opacity:0.35" disabled>▶</button><button class="act-btn" style="opacity:0.35;flex:1" disabled>⬇</button>'}<button class="act-btn p" onclick="startVidAsm()" style="flex:1">🎬 ASSEMBLE →</button></div>${!real?'<div style="font-size:9px;color:var(--chalk4);margin-top:7px;font-weight:400">ADD ELEVENLABS KEY IN SETTINGS FOR REAL VOICE</div>':''}</div>`;
+  s2.className='step-card dn'; st2.textContent='✓ READY';
+  document.getElementById('sc3').className='step-card';
+  document.getElementById('vidBody').innerHTML='<div style="font-size:10px;color:var(--chalk3);font-weight:400">READY — TAP ASSEMBLE ABOVE</div>';
+}
+
+let curAu=null;
+function playAu(url){if(curAu)curAu.pause();curAu=new Audio(url);curAu.play();}
+
+function startVidAsm() {
+  const s3=document.getElementById('sc3'), vb=document.getElementById('vidBody'), st3=document.getElementById('ss3');
+  const bg=document.getElementById('bgSel')?.value||'Minecraft Parkour';
+  s3.className='step-card as'; st3.textContent='ASSEMBLING...';
+  const steps=['⬇ FETCHING BACKGROUND FOOTAGE...','🔊 SYNCING VOICEOVER...','📝 BURNING CAPTIONS...','🎨 COLOUR GRADING...','📦 ENCODING MP4...'];
+  let si=0;
+  vb.innerHTML=`<div class="ld-row"><div class="spin"></div><span id="aL">${steps[0]}</span></div><div style="margin-top:9px;height:2px;background:var(--rim);border-radius:1px;overflow:hidden;"><div id="aB" style="height:100%;width:0%;background:var(--green);border-radius:1px;transition:width 0.4s;box-shadow:0 0 6px rgba(0,255,136,0.5);"></div></div>`;
+  const iv=setInterval(()=>{
+    si++; const pct=Math.round((si/steps.length)*100);
+    const l=document.getElementById('aL'),b=document.getElementById('aB');
+    if(l)l.textContent=steps[si]||'✓ DONE!'; if(b)b.style.width=pct+'%';
+    if(si>=steps.length-1){clearInterval(iv);setTimeout(()=>{
+      s3.className='step-card dn'; st3.textContent='✓ READY';
+      vb.innerHTML=`<div style="background:var(--void);border:1px solid var(--rim2);border-radius:2px;overflow:hidden;"><div style="height:80px;background:linear-gradient(135deg,#050708,#0c100e,#050708);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;"><div style="font-size:28px">🎬</div><div style="font-size:9px;color:var(--green);font-weight:700;letter-spacing:2px">VIDEO READY</div></div><div style="padding:10px 12px;"><div style="font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:8px">${bg} · ${curVoice} · Captions ON</div><div class="vo-ctrls"><button class="act-btn" onclick="alert('Downloads in production')">⬇ DOWNLOAD</button><button class="act-btn p" onclick="addQ()" style="flex:1">📤 ADD TO QUEUE →</button></div></div></div>`;
+    },600);}
+  },900);
+}
+
+function addQ() {
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--green);color:var(--void);padding:9px 18px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;z-index:999;white-space:nowrap;letter-spacing:0.5px;';
+  t.textContent='✓ ADDED TO QUEUE';document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
+}
+
+/* ── LIVE DEMO ── */
+const DEMO=[
+  {id:'dn0',e:'😨',t:'The Hotel That Hid a Killer',s:'🪝 Nobody checked the security footage for 3 years.\n\n📖 In 1997, Room 207 was booked for six nights. The guest never checked out. When housekeeping finally entered...\n\n💥 Follow for more true crime you won\'t believe is real.'},
+  {id:'dn1',e:'💰',t:'5 Stocks That Made Millionaires',s:'🪝 The stock everyone laughed at in 2010 is worth $900 today.\n\n📖 Here are 5 companies that rewarded early investors with life-changing returns — and what they all had in common.\n\n💥 Follow for daily finance breakdowns.'},
+  {id:'dn2',e:'🧠',t:'Why You Can\'t Stop Scrolling',s:'🪝 Your phone is designed to be more addictive than cocaine.\n\n📖 The variable reward loop, infinite scroll, notification ping — each one is a psychological trigger engineered by the world\'s smartest teams.\n\n💥 Follow to understand why you do what you do.'},
+  {id:'dn3',e:'👻',t:'The House Nobody Will Buy',s:'🪝 It\'s been listed at $1. No one will touch it.\n\n📖 The family left in the middle of dinner. Plates on the table. Car in the drive. They never came back.\n\n💥 Part two drops tomorrow. Follow now.'},
+  {id:'dn4',e:'🌍',t:'The War Nobody Talks About',s:'🪝 650,000 soldiers died and most people can\'t name it.\n\n📖 The Philippine-American War lasted 15 years, cost more lives than the war that started it, and was erased from most textbooks.\n\n💥 Follow for forgotten history daily.'},
+];
+
+let dR=false, dT=null;
+const sl=ms=>new Promise(r=>setTimeout(r,ms));
+
+async function typeIt(el, cur, text, spd=11) {
+  el.textContent=''; if(cur) cur.classList.remove('hidden');
+  for(let i=0;i<text.length;i++){
+    el.textContent+=text[i];
+    if(i%3===0) await sl(spd);
   }
+  if(cur) cur.classList.add('hidden');
 }
 
-function showVoicePlayer(voiceBody, stepStatus2, voiceStep, audioUrl, isReal) {
-  const dur = Math.floor(currentScript.split(' ').length / 2.5);
-  const bars = Array.from({length: 38}, (_, i) =>
-    `<div class="vo-bar" style="height:${Math.random()*24+6}px; animation-delay:${(i*0.05).toFixed(2)}s;"></div>`
-  ).join('');
-
-  voiceBody.innerHTML = `
-    <div class="vo-player">
-      <div class="vo-info">
-        <div class="vo-icon">🎙</div>
-        <div class="vo-meta">
-          <div class="vo-name">${selectedVoice} — ${isReal ? 'ElevenLabs' : 'Device TTS'}</div>
-          <div class="vo-details">~${dur}s · ${currentScript.split(' ').length} words · MP3</div>
-        </div>
-      </div>
-      <div class="vo-waveform" id="voWaveform">${bars}</div>
-      <div class="vo-controls">
-        ${audioUrl ? `<button class="action-btn" onclick="playAudio('${audioUrl}')">▶ Play</button>` : '<button class="action-btn" style="opacity:0.4" disabled>▶ Play</button>'}
-        ${audioUrl ? `<a href="${audioUrl}" download="voiceover_${selectedVoice}.mp3" style="text-decoration:none; flex:1;"><button class="action-btn" style="width:100%">⬇ Download MP3</button></a>` : '<button class="action-btn" style="opacity:0.4; flex:1;" disabled>⬇ Download</button>'}
-        <button class="action-btn primary" onclick="startVideoAssembly()" style="flex:1;">🎬 Assemble →</button>
-      </div>
-      ${!isReal ? '<div style="font-size:10px; color:var(--text3); font-family:\'DM Mono\',monospace; margin-top:8px;">Add ElevenLabs key in Settings for real voice quality</div>' : ''}
-    </div>`;
-
-  voiceStep.className = 'step-card done-step';
-  stepStatus2.textContent = '✓ Ready';
-  // Unlock step 3
-  document.getElementById('stepVideo').className = 'step-card';
-  document.getElementById('videoBody').innerHTML = '<div style="font-size:12px; color:var(--text2); font-family:\'DM Mono\',monospace;">Ready — tap Assemble in step 2</div>';
+function litNum(id, on) {
+  const el=document.getElementById(id);
+  if(el) el.classList.toggle('lit', on);
 }
 
-let currentAudio = null;
-function playAudio(url) {
-  if (currentAudio) { currentAudio.pause(); }
-  currentAudio = new Audio(url);
-  currentAudio.play();
+async function runDemo() {
+  if(dR) return; dR=true;
+  const rb=document.getElementById('demoReplay'); if(rb) rb.style.display='none';
+  // reset
+  document.querySelectorAll('.nc').forEach(c=>c.classList.remove('lit'));
+  ['dsn0','dsn1','dsn2','dsn3'].forEach(id=>litNum(id,false));
+  const sc=document.getElementById('demoScript');
+  const cur=document.getElementById('demoCursor');
+  const vo=document.getElementById('demoVoice');
+  const vid=document.getElementById('demoVid');
+  const pb=document.getElementById('demoPostBtn');
+  if(sc){sc.textContent='';} if(cur)cur.classList.add('hidden');
+  if(vo)vo.classList.remove('lit');
+  document.querySelectorAll('.v-bar').forEach(b=>b.classList.remove('playing'));
+  if(vid)vid.classList.remove('lit');
+  if(pb)pb.classList.remove('lit');
+
+  const pick=DEMO[Math.floor(Math.random()*DEMO.length)];
+
+  await sl(400);
+  litNum('dsn0', true);
+  document.getElementById(pick.id)?.classList.add('lit');
+  await sl(800);
+
+  litNum('dsn1', true);
+  if(sc && cur) await typeIt(sc, cur, pick.s, 10);
+  await sl(300);
+
+  litNum('dsn2', true);
+  if(vo) vo.classList.add('lit');
+  document.querySelectorAll('.v-bar').forEach(b=>b.classList.add('playing'));
+  await sl(1800);
+
+  litNum('dsn3', true);
+  if(vid) vid.classList.add('lit');
+  const em=document.getElementById('demoEmoji'), st=document.getElementById('demoStatus'), ti=document.getElementById('demoTitle');
+  if(em) em.textContent=pick.e;
+  if(st){st.textContent='READY TO POST';st.style.color='var(--green)';}
+  if(ti) ti.textContent=pick.t;
+  await sl(400);
+  if(pb) pb.classList.add('lit');
+
+  dR=false; if(rb) rb.style.display='block';
 }
 
-// ── STEP 3: VIDEO ASSEMBLY ──
-function startVideoAssembly() {
-  const videoStep = document.getElementById('stepVideo');
-  const videoBody = document.getElementById('videoBody');
-  const stepStatus3 = document.getElementById('stepStatus3');
-  const bg = document.getElementById('background')?.value || 'Minecraft Parkour';
-
-  videoStep.className = 'step-card active-step';
-  stepStatus3.textContent = 'Assembling...';
-
-  const steps = [
-    '⬇ Fetching background footage...',
-    '🔊 Syncing voiceover to video...',
-    '📝 Burning in captions...',
-    '🎨 Applying color grade...',
-    '📦 Encoding final MP4...'
-  ];
-
-  let stepIdx = 0;
-  videoBody.innerHTML = `<div class="loading-row"><div class="spinner"></div> <span id="assemblyLabel">${steps[0]}</span></div>
-    <div style="margin-top:12px; height:4px; background:var(--border2); border-radius:2px; overflow:hidden;">
-      <div id="assemblyBar" style="height:100%; width:0%; background:var(--accent); border-radius:2px; transition:width 0.4s;"></div>
-    </div>`;
-
-  const iv = setInterval(() => {
-    stepIdx++;
-    const pct = Math.round((stepIdx / steps.length) * 100);
-    const label = document.getElementById('assemblyLabel');
-    const bar = document.getElementById('assemblyBar');
-    if (label) label.textContent = steps[stepIdx] || '✓ Done!';
-    if (bar) bar.style.width = pct + '%';
-
-    if (stepIdx >= steps.length - 1) {
-      clearInterval(iv);
-      setTimeout(() => showVideoReady(videoStep, videoBody, stepStatus3, bg), 600);
-    }
-  }, 900);
-}
-
-function showVideoReady(videoStep, videoBody, stepStatus3, bg) {
-  videoStep.className = 'step-card done-step';
-  stepStatus3.textContent = '✓ Ready';
-  videoBody.innerHTML = `
-    <div style="background:var(--surface2); border:1px solid var(--border2); border-radius:10px; overflow:hidden;">
-      <div style="background: linear-gradient(135deg, #1a1e2a, #0d1117); height:120px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:6px;">
-        <div style="font-size:36px;">🎬</div>
-        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--text3);">${bg} · ${selectedVoice} voice · captions on</div>
-      </div>
-      <div style="padding:12px;">
-        <div style="font-size:13px; font-weight:600; margin-bottom:10px; color:var(--accent3);">✓ Video Ready!</div>
-        <div class="vo-controls">
-          <button class="action-btn" onclick="alert('In production this downloads your MP4')">⬇ Download</button>
-          <button class="action-btn primary" onclick="addToQueue()" style="flex:1">📤 Add to Queue →</button>
-        </div>
-      </div>
-    </div>`;
-}
-
-function addToQueue() {
-  // Show a quick toast
-  const toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--accent3);color:#000;padding:10px 20px;border-radius:8px;font-weight:700;font-size:13px;z-index:999;';
-  toast.textContent = '✓ Added to queue!';
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 2500);
-}
-
-function addQueue() { addToQueue(); }
-
-function selectVoice(card, voice) {
-  document.querySelectorAll('.voice-card').forEach(c => c.classList.remove('selected'));
-  card.classList.add('selected');
-  selectedVoice = voice;
-}
-
-async function previewVoice(e, voice, text) {
-  e.stopPropagation();
-  const player = document.getElementById('previewPlayer');
-  const label = document.getElementById('previewLabel');
-
-  // Stop any playing audio
-  if (previewAudio) { previewAudio.pause(); previewAudio = null; }
-
-  player.style.display = 'block';
-  label.textContent = `Generating ${voice} preview...`;
-
-  try {
-    // Use browser's built-in TTS as a realistic stand-in
-    // (Real version connects to ElevenLabs API with voice ID)
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(text);
-
-      // Pick voice characteristics per selection
-      const voices = window.speechSynthesis.getVoices();
-      if (voice === 'Adam' || voice === 'Josh' || voice === 'Arnold') {
-        utt.pitch = voice === 'Arnold' ? 0.7 : voice === 'Josh' ? 1.1 : 0.85;
-        utt.rate = voice === 'Josh' ? 1.1 : 0.9;
-        const maleVoice = voices.find(v => v.name.toLowerCase().includes('male') || v.name.includes('Daniel') || v.name.includes('Alex') || v.name.includes('Fred'));
-        if (maleVoice) utt.voice = maleVoice;
-      } else if (voice === 'Whisper') {
-        utt.pitch = 0.9;
-        utt.rate = 0.75;
-        utt.volume = 0.6;
-      } else {
-        utt.pitch = voice === 'Bella' ? 1.1 : 1.0;
-        utt.rate = 0.9;
-        const femaleVoice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.toLowerCase().includes('female'));
-        if (femaleVoice) utt.voice = femaleVoice;
-      }
-
-      label.textContent = `Playing ${voice} — "${text.substring(0,30)}..."`;
-      utt.onend = () => { player.style.display = 'none'; };
-      window.speechSynthesis.speak(utt);
-    } else {
-      label.textContent = 'Preview not supported on this browser';
-      setTimeout(() => { player.style.display = 'none'; }, 2000);
-    }
-  } catch(err) {
-    label.textContent = 'Preview unavailable — ElevenLabs API key needed';
-    setTimeout(() => { player.style.display = 'none'; }, 2500);
-  }
-}
-
-function stopPreview() {
-  window.speechSynthesis.cancel();
-  document.getElementById('previewPlayer').style.display = 'none';
-}
-
-function showUpgrade() {
-  document.getElementById('upgradeModal').classList.add('show');
-}
-
-function closeUpgrade(e) {
-  if (!e || e.target === document.getElementById('upgradeModal')) {
-    document.getElementById('upgradeModal').classList.remove('show');
-  }
-}
-
-function showPage(name, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  btn.classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function selectNiche(el, niche) {
-  document.querySelectorAll('.niche-btn').forEach(b => b.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedNiche = niche;
-}
-
-async function generateScript() {
-  const btn = document.getElementById('genBtn');
-  const outputBox = document.getElementById('outputBox');
-  const scriptArea = document.getElementById('scriptArea');
-  const actionRow = document.getElementById('actionRow');
-
-  btn.disabled = true;
-  btn.textContent = '⏳ Writing script...';
-  outputBox.classList.add('visible');
-  scriptArea.innerHTML = '<div class="loading-row"><div class="spinner"></div> Claude is writing your script...</div>';
-  actionRow.style.display = 'none';
-
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [{
-          role: "user",
-          content: `You are a viral TikTok script writer. Write a gripping 60-second faceless TikTok video script for the niche: "${selectedNiche}".
-
-FORMAT exactly like this:
-🎬 TITLE: [catchy title]
-🪝 HOOK (0-3s): [scroll-stopping opening line]
-📖 STORY (3-55s): [main narration — conversational, punchy, builds tension]
-💥 OUTRO (55-60s): [follow for more CTA]
-#️⃣ HASHTAGS: [5-7 hashtags]
-
-Write it as spoken word. Short sentences. Create real tension. Make them NEED to watch till the end.`
-        }]
-      })
-    });
-
-    const data = await res.json();
-    const text = data.content?.map(i => i.text || '').join('') || 'Failed to generate. Check API key in settings.';
-
-    scriptArea.textContent = '';
-    let i = 0;
-    const chars = text.split('');
-    const iv = setInterval(() => {
-      if (i < chars.length) {
-        scriptArea.textContent += chars[i];
-        i += 4;
-        scriptArea.scrollTop = scriptArea.scrollHeight;
-      } else {
-        scriptArea.textContent = text;
-        clearInterval(iv);
-        actionRow.style.display = 'grid';
-      }
-    }, 8);
-
-  } catch(e) {
-    scriptArea.textContent = '⚠️ Could not connect to AI. Add your API key in Settings.';
-    actionRow.style.display = 'grid';
-  }
-
-  btn.disabled = false;
-  btn.textContent = '⚡ Generate Script';
-}
-
-function addQueue() {
-  alert('✅ Added to queue! Will auto-build and post on schedule.');
-}
-
-function buildVid(btn) {
-  btn.textContent = '⏳ Building...';
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.textContent = '✅ Queued';
-    btn.style.background = 'var(--accent3)';
-    btn.style.borderColor = 'var(--accent3)';
-    btn.disabled = false;
-  }, 2000);
-}
+function startDemoLoop() { clearTimeout(dT); runDemo().then(()=>{ dT=setTimeout(startDemoLoop,4500); }); }
 </script>
 </body>
 </html>
